@@ -1,16 +1,34 @@
 #!/usr/bin/env bash
-# Usage: ./release.sh <version>
-#
-# Bumps the version in manifest.json, commits it, creates a git tag,
-# and pushes both to origin. GitHub Actions then builds and publishes
-# the extension to the Chrome Web Store automatically.
+# Usage:
+#   ./release.sh <version>  — bump version, commit, tag, and push (triggers CI)
+#   ./release.sh            — build popup and create a local zip for testing
 #
 # Example: ./release.sh 1.8.1
 set -e
 
+make_zip() {
+  local version
+  version=$(node -p "require('./manifest.json').version")
+  local zip_name="leetpush-${version}.zip"
+
+  cd popup && bun run build && cd ..
+
+  zip -r "${zip_name}" \
+    manifest.json \
+    background.js \
+    content-script.js \
+    style.css \
+    images/ \
+    dist/ \
+    assets/ \
+    --exclude "*.DS_Store"
+
+  echo "✓ Created ${zip_name}"
+}
+
 if [ -z "$1" ]; then
-  echo "Usage: ./release.sh <version>  (e.g. ./release.sh 1.8.1)"
-  exit 1
+  make_zip
+  exit 0
 fi
 
 VERSION="$1"
