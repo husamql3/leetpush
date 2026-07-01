@@ -25,7 +25,7 @@ export default function UserProvider({ children }: { children: ReactNode }) {
     if (storedUsername && storedUsername !== username) {
       setUsernameState(storedUsername);
     }
-  }, []);
+  }, [username]);
 
   return (
     <UserContext.Provider value={{ username, setUsername }}>

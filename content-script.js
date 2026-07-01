@@ -1,96 +1,86 @@
-; (() => {
-  // Constants
-  const BASE_URL = "https://api.github.com/repos"
+;(() => {
+  const BASE_URL = 'https://api.github.com/repos'
+
   const FILE_EXTENSIONS = {
-    C: ".c",
-    "C++": ".cpp",
-    "C#": ".cs",
-    Dart: ".dart",
-    Elixir: ".ex",
-    Erlang: ".erl",
-    Go: ".go",
-    Java: ".java",
-    JavaScript: ".js",
-    Kotlin: ".kt",
-    PHP: ".php",
-    Python: ".py",
-    Python3: ".py",
-    Racket: ".rkt",
-    Ruby: ".rb",
-    Rust: ".rs",
-    Scala: ".scala",
-    Swift: ".swift",
-    TypeScript: ".ts",
-    MySQL: ".sql",
-    PostgreSQL: ".sql",
-    Oracle: ".sql",
-    "MS SQL Server": ".tsql",
-    Pandas: ".py",
+    C: '.c',
+    'C++': '.cpp',
+    'C#': '.cs',
+    Dart: '.dart',
+    Elixir: '.ex',
+    Erlang: '.erl',
+    Go: '.go',
+    Java: '.java',
+    JavaScript: '.js',
+    Kotlin: '.kt',
+    PHP: '.php',
+    Python: '.py',
+    Python3: '.py',
+    Racket: '.rkt',
+    Ruby: '.rb',
+    Rust: '.rs',
+    Scala: '.scala',
+    Swift: '.swift',
+    TypeScript: '.ts',
+    MySQL: '.sql',
+    PostgreSQL: '.sql',
+    Oracle: '.sql',
+    'MS SQL Server': '.tsql',
+    Pandas: '.py',
   }
 
   const LOCAL_STORAGE_KEYS = {
-    C: "c",
-    "C++": "cpp",
-    "C#": "csharp",
-    Dart: "dart",
-    Elixir: "elixir",
-    Erlang: "erlang",
-    Go: "golang",
-    Java: "java",
-    JavaScript: "javascript",
-    Kotlin: "kotlin",
-    PHP: "php",
-    Python: "python",
-    Python3: "python3",
-    Racket: "racket",
-    Ruby: "ruby",
-    Rust: "rust",
-    Scala: "scala",
-    Swift: "swift",
-    TypeScript: "typeScript",
-    MySQL: "mysql",
-    Oracle: "oraclesql",
-    PostgreSQL: "postgresql",
-    "MS SQL Server": "mssql",
-    Pandas: "pythondata",
+    C: 'c',
+    'C++': 'cpp',
+    'C#': 'csharp',
+    Dart: 'dart',
+    Elixir: 'elixir',
+    Erlang: 'erlang',
+    Go: 'golang',
+    Java: 'java',
+    JavaScript: 'javascript',
+    Kotlin: 'kotlin',
+    PHP: 'php',
+    Python: 'python',
+    Python3: 'python3',
+    Racket: 'racket',
+    Ruby: 'ruby',
+    Rust: 'rust',
+    Scala: 'scala',
+    Swift: 'swift',
+    TypeScript: 'typeScript',
+    MySQL: 'mysql',
+    Oracle: 'oraclesql',
+    PostgreSQL: 'postgresql',
+    'MS SQL Server': 'mssql',
+    Pandas: 'pythondata',
   }
 
-  const DATABASE_LANGUAGES = ["MySQL", "Oracle", "PostgreSQL", "MS SQL Server", "Pandas"]
+  const DATABASE_LANGUAGES = ['MySQL', 'Oracle', 'PostgreSQL', 'MS SQL Server', 'Pandas']
 
-  // Platform detection
   const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform)
 
-  // Default keyboard shortcuts based on platform
-  const DEFAULT_SHORTCUT = isMac
-    ? { key: "p", modifier: "meta" }
-    : {
-      key: "p",
-      modifier: "ctrl",
-    }
+  const DEFAULT_SHORTCUT = isMac ? { key: 'p', modifier: 'meta' } : { key: 'p', modifier: 'ctrl' }
 
-  // Shortcut display text
   const getShortcutDisplayText = (shortcut) => {
-    const modifierSymbol =
-      shortcut.modifier === "meta"
-        ? "⌘"
-        : shortcut.modifier === "alt"
-          ? "⌥"
-          : shortcut.modifier === "shift"
-            ? "⇧"
-            : shortcut.modifier === "ctrl"
-              ? "Ctrl+"
-              : ""
-    return `${modifierSymbol}${shortcut.key.toUpperCase()}`
+    const sym =
+      shortcut.modifier === 'meta'
+        ? '⌘'
+        : shortcut.modifier === 'alt'
+          ? '⌥'
+          : shortcut.modifier === 'shift'
+            ? '⇧'
+            : shortcut.modifier === 'ctrl'
+              ? 'Ctrl+'
+              : ''
+    return `${sym}${shortcut.key.toUpperCase()}`
   }
 
-  // Get keyboard shortcut from localStorage or use default
   const getKeyboardShortcut = () => {
-    const savedShortcut = localStorage.getItem("keyboard-shortcut")
-    if (savedShortcut) {
+    const saved = localStorage.getItem('keyboard-shortcut')
+    if (saved) {
       try {
-        return JSON.parse(savedShortcut)
-      } catch (e) {
-        console.error("Error parsing saved shortcut:", e)
+        return JSON.parse(saved)
+      } catch {
         return DEFAULT_SHORTCUT
       }
     }
@@ -100,78 +90,391 @@
   let KEYBOARD_SHORTCUT = getKeyboardShortcut()
   let SHORTCUT_DISPLAY = getShortcutDisplayText(KEYBOARD_SHORTCUT)
 
-  // DOM Selectors
-  const SELECTORS = {
-    problemName: "div.flex.items-start.justify-between.gap-4 > div.flex.items-start.gap-2 > div > a",
-    solutionLanguage:
-      "div.flex.h-full.flex-nowrap.items-center > div:nth-child(1) > button",
-    accepted:
-      "div.text-green-s.dark\\:text-dark-green-s.flex.flex-1.items-center.gap-2.text-\\[16px\\].font-medium.leading-6 > span",
+  // Fallback-only DOM selectors — only used when API/localStorage approach fails
+  const FALLBACK_SELECTORS = {
     parentDiv:
-      "div.flex.justify-between.py-1.pl-3.pr-1 > div.relative.flex.overflow-hidden.rounded.bg-fill-tertiary.dark\\:bg-fill-tertiary.\\!bg-transparent > div.flex-none.flex > div:nth-child(2)",
+      'div.flex.justify-between.py-1.pl-3.pr-1 > div.relative.flex.overflow-hidden.rounded.bg-fill-tertiary.dark\\:bg-fill-tertiary.\\!bg-transparent > div.flex-none.flex > div:nth-child(2)',
     parentDivCodeEditor:
-      "#ide-top-btns > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > div > div:last-child",
-    codeBlock: "div.px-4.py-3 > div > pre > code",
+      '#ide-top-btns > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > div > div:last-child',
     performanceMetrics:
-      "div.flex.items-center.justify-between.gap-2 > div > div.rounded-sd.flex.min-w-\\[275px\\].flex-1.cursor-pointer.flex-col.px-4.py-3.text-xs > div:nth-child(2) > span.font-semibold",
+      'div.flex.items-center.justify-between.gap-2 > div > div.rounded-sd.flex.min-w-\\[275px\\].flex-1.cursor-pointer.flex-col.px-4.py-3.text-xs > div:nth-child(2) > span.font-semibold',
   }
 
-  // Main initialization
-  document.addEventListener("DOMContentLoaded", initLeetPush)
+  // ─── Toast System ─────────────────────────────────────────────────────────
 
-  function initLeetPush() {
-    // Only run on submission pages with accepted solutions
-    if (isSubmissionPage() && hasAcceptedSolution()) {
-      injectButtons()
-      extractProblemInfo()
-      registerKeyboardShortcut()
+  function injectToastStyles() {
+    if (document.getElementById('lp-toast-styles')) return
+    const style = document.createElement('style')
+    style.id = 'lp-toast-styles'
+    style.textContent = `
+      #lp-toaster {
+        position: fixed;
+        top: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        pointer-events: none;
+        width: 356px;
+        max-width: calc(100vw - 2rem);
+      }
+      .lp-toast {
+        pointer-events: all;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.625rem;
+        padding: 0.875rem 1rem;
+        border-radius: 0.625rem;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 1.45;
+        background: #18181b;
+        border: 1px solid #3f3f46;
+        color: #fafafa;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.4), 0 10px 20px -4px rgba(0,0,0,0.5);
+        animation: lp-toast-in 0.35s cubic-bezier(0.21,1.02,0.73,1) forwards;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      }
+      .lp-toast-icon {
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+        margin-top: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 10px;
+        font-weight: 700;
+      }
+      .lp-toast-error .lp-toast-icon  { background: #ef4444; color: #fff; }
+      .lp-toast-success .lp-toast-icon { background: #22c55e; color: #fff; }
+      .lp-toast-info .lp-toast-icon    { background: #3b82f6; color: #fff; }
+      .lp-toast-message { flex: 1; }
+      .lp-toast-close {
+        background: none;
+        border: none;
+        color: #71717a;
+        cursor: pointer;
+        font-size: 13px;
+        padding: 0;
+        flex-shrink: 0;
+        line-height: 1;
+        transition: color 0.15s;
+        margin-top: 1px;
+      }
+      .lp-toast-close:hover { color: #fafafa; }
+      .lp-toast-out {
+        animation: lp-toast-out 0.25s ease forwards !important;
+      }
+      @keyframes lp-toast-in {
+        from { opacity: 0; transform: translateY(-12px) scale(0.95); }
+        to   { opacity: 1; transform: translateY(0)    scale(1); }
+      }
+      @keyframes lp-toast-out {
+        from { opacity: 1; transform: translateY(0) scale(1); max-height: 80px; margin-bottom: 0; }
+        to   { opacity: 0; transform: translateY(-8px) scale(0.95); max-height: 0; margin-bottom: -0.5rem; }
+      }
+    `
+    document.head.appendChild(style)
+  }
+
+  function ensureToaster() {
+    let toaster = document.getElementById('lp-toaster')
+    if (!toaster) {
+      toaster = document.createElement('div')
+      toaster.id = 'lp-toaster'
+      document.body.appendChild(toaster)
+    }
+    return toaster
+  }
+
+  function showToast(message, type = 'error') {
+    injectToastStyles()
+    const toaster = ensureToaster()
+
+    const toast = document.createElement('div')
+    toast.className = `lp-toast lp-toast-${type}`
+
+    const iconText = type === 'error' ? '✕' : type === 'success' ? '✓' : 'i'
+    toast.innerHTML = `
+      <span class="lp-toast-icon">${iconText}</span>
+      <span class="lp-toast-message">${message}</span>
+      <button class="lp-toast-close" aria-label="Close">✕</button>
+    `
+
+    toast.querySelector('.lp-toast-close').addEventListener('click', () => dismissToast(toast))
+    toaster.appendChild(toast)
+
+    const timer = setTimeout(() => dismissToast(toast), 4500)
+    toast._lpTimer = timer
+  }
+
+  function dismissToast(toast) {
+    if (!toast.isConnected) return
+    clearTimeout(toast._lpTimer)
+    toast.classList.add('lp-toast-out')
+    toast.addEventListener('animationend', () => toast.remove(), { once: true })
+  }
+
+  // ─── Problem Resolution: URL + GraphQL + localStorage ─────────────────────
+
+  function getProblemSlugFromURL() {
+    const match = window.location.pathname.match(/\/problems\/([^/]+)\//)
+    return match?.[1] ?? null
+  }
+
+  async function getProblemMetaFromGraphQL(titleSlug) {
+    try {
+      const res = await fetch('https://leetcode.com/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: `{ question(titleSlug: "${titleSlug}") { questionFrontendId title } }`,
+        }),
+      })
+      const data = await res.json()
+      return data?.data?.question ?? null
+    } catch {
+      return null
     }
   }
 
-  // Helper functions
+  async function fetchFullProblemData(titleSlug) {
+    try {
+      const res = await fetch('https://leetcode.com/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: `{
+            question(titleSlug: "${titleSlug}") {
+              questionFrontendId
+              title
+              difficulty
+              content
+              topicTags { name }
+            }
+          }`,
+        }),
+      })
+      const data = await res.json()
+      return data?.data?.question ?? null
+    } catch {
+      return null
+    }
+  }
+
+  function buildReadme(problemData, solutionFileName) {
+    const { questionFrontendId, title, difficulty, content, topicTags } = problemData
+    const slug = title.toLowerCase().replaceAll(' ', '-')
+    const url = `https://leetcode.com/problems/${slug}/`
+    const tags = topicTags?.map((t) => t.name).join(', ') || 'N/A'
+    const diffEmoji = difficulty === 'Easy' ? '🟢' : difficulty === 'Medium' ? '🟡' : '🔴'
+
+    return `# ${questionFrontendId}. ${title}
+
+${diffEmoji} **${difficulty}** &nbsp;|&nbsp; [View on LeetCode](${url})
+
+**Topics:** ${tags}
+
+---
+
+${content || ''}
+
+---
+
+**My Solution:** [${solutionFileName}](./${solutionFileName})
+`
+  }
+
+  // Scan all buttons for a known language name — resilient to LeetCode DOM changes
+  function detectLanguage() {
+    const buttons = document.querySelectorAll('button')
+    for (const btn of buttons) {
+      const text = btn.textContent?.trim()
+      if (text && FILE_EXTENSIONS[text]) return text
+    }
+    return null
+  }
+
+  function getSolutionFromLocalStorage(probNum) {
+    const allKeys = []
+    for (let i = 0; i < localStorage.length; i++) {
+      allKeys.push(localStorage.key(i))
+    }
+
+    for (const [lang, langKey] of Object.entries(LOCAL_STORAGE_KEYS)) {
+      const match = allKeys.find((k) => {
+        const parts = k.split('_')
+        return parts[0] === probNum && parts[parts.length - 1] === langKey
+      })
+      if (match) {
+        const raw = localStorage.getItem(match)
+        if (raw) {
+          return {
+            lang,
+            solution: raw.replace(/\\n/g, '\n').replace(/ {2}/g, '  ').replace(/"/g, ''),
+          }
+        }
+      }
+    }
+    return null
+  }
+
+  function findPercentValues() {
+    const pctPattern = /^\d+\.?\d*%$/
+    const results = []
+    document.querySelectorAll('span').forEach((el) => {
+      const text = el.textContent?.trim() ?? ''
+      if (pctPattern.test(text)) results.push(text)
+    })
+    return results
+  }
+
+  function extractPerformanceMetrics(language) {
+    // Try specific selector first
+    const specific = document.querySelectorAll(FALLBACK_SELECTORS.performanceMetrics)
+
+    if (DATABASE_LANGUAGES.includes(language)) {
+      if (specific.length >= 2) {
+        return { runtime: specific[1]?.textContent?.trim() || 'N/A', memory: null }
+      }
+      const pct = findPercentValues()
+      return { runtime: pct[0] || 'N/A', memory: null }
+    }
+
+    if (specific.length >= 4) {
+      return {
+        runtime: specific[1]?.textContent?.trim() || 'N/A',
+        memory: specific[3]?.textContent?.trim() || 'N/A',
+      }
+    }
+
+    // Fallback: locate % values in the page
+    const pct = findPercentValues()
+    return { runtime: pct[0] || 'N/A', memory: pct[1] || 'N/A' }
+  }
+
+  async function extractProblemInfo() {
+    try {
+      const titleSlug = getProblemSlugFromURL()
+      if (!titleSlug) {
+        console.error('LeetPush: could not extract problem slug from URL')
+        return null
+      }
+
+      const meta = await getProblemMetaFromGraphQL(titleSlug)
+      if (!meta) {
+        console.error('LeetPush: GraphQL returned no data for slug:', titleSlug)
+        return null
+      }
+
+      const probNum = meta.questionFrontendId
+      const probName = meta.title.replaceAll(' ', '-')
+
+      const language = detectLanguage()
+      if (!language || !FILE_EXTENSIONS[language]) {
+        console.error('LeetPush: could not detect solution language')
+        return null
+      }
+
+      const fullFileName = `${probNum}-${probName}${FILE_EXTENSIONS[language]}`
+
+      // Prefer localStorage; fall back to DOM code block
+      let solution = null
+      const stored = getSolutionFromLocalStorage(probNum)
+      if (stored) {
+        solution = stored.solution
+      } else {
+        const codeEl = document.querySelector('div.px-4.py-3 > div > pre > code')
+        if (codeEl) {
+          solution = Array.from(codeEl.children).map((line) =>
+            Array.from(line.childNodes).slice(1).map((n) => n.textContent).join('')
+          ).join('').replace(/ /g, ' ') || codeEl.textContent || ''
+        }
+      }
+
+      if (!solution) {
+        console.error('LeetPush: solution not found in localStorage or DOM')
+        return null
+      }
+
+      const metrics = extractPerformanceMetrics(language)
+      const commitMsg =
+        metrics.memory !== null
+          ? `[${probNum}] [Time Beats: ${metrics.runtime}] [Memory Beats: ${metrics.memory}] - LeetPush`
+          : `[${probNum}] [Time Beats: ${metrics.runtime}] - LeetPush`
+
+      sessionStorage.setItem('fileName', fullFileName)
+      sessionStorage.setItem('solution', solution)
+      sessionStorage.setItem('commitMsg', commitMsg)
+
+      return { probNum, probName, fileName: fullFileName, solution, commitMsg, language }
+    } catch (error) {
+      console.error('LeetPush: error extracting problem info:', error)
+      return null
+    }
+  }
+
+  // ─── Submission Detection ─────────────────────────────────────────────────
+
   function isSubmissionPage() {
-    return window.location.href.includes("submissions")
+    return window.location.pathname.includes('/submissions/')
   }
 
   function hasAcceptedSolution() {
-    return !!document.querySelector(SELECTORS.accepted)
+    // Text-based scan — resilient to class name changes
+    const candidates = document.querySelectorAll('span, div, h4, p')
+    return Array.from(candidates).some(
+      (el) => el.childElementCount === 0 && el.textContent?.trim() === 'Accepted',
+    )
   }
 
   function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms))
   }
 
-  // Register keyboard shortcut
+  // ─── Keyboard Shortcut ────────────────────────────────────────────────────
+
   function registerKeyboardShortcut() {
-    document.addEventListener("keydown", (event) => {
-      // Check if the shortcut matches the configured one
-      if (
-        (KEYBOARD_SHORTCUT.modifier === "meta" && event.metaKey) ||
-        (KEYBOARD_SHORTCUT.modifier === "alt" && event.altKey) ||
-        (KEYBOARD_SHORTCUT.modifier === "shift" && event.shiftKey) ||
-        (KEYBOARD_SHORTCUT.modifier === "ctrl" && event.ctrlKey)
-      ) {
-        if (event.key.toLowerCase() === KEYBOARD_SHORTCUT.key.toLowerCase()) {
-          event.preventDefault()
-          handlePushClick()
-        }
+    document.addEventListener('keydown', (event) => {
+      const modMatch =
+        (KEYBOARD_SHORTCUT.modifier === 'meta' && event.metaKey) ||
+        (KEYBOARD_SHORTCUT.modifier === 'alt' && event.altKey) ||
+        (KEYBOARD_SHORTCUT.modifier === 'shift' && event.shiftKey) ||
+        (KEYBOARD_SHORTCUT.modifier === 'ctrl' && event.ctrlKey)
+
+      if (modMatch && event.key.toLowerCase() === KEYBOARD_SHORTCUT.key.toLowerCase()) {
+        event.preventDefault()
+        handlePushClick()
       }
     })
   }
 
-  // Button injection
+  // ─── Button Injection ─────────────────────────────────────────────────────
+
+  function findParent(selectors) {
+    for (const sel of selectors) {
+      const el = document.querySelector(sel)
+      if (el) return el
+    }
+    return null
+  }
+
   function injectButtons() {
-    const parentDiv = document.querySelector(SELECTORS.parentDiv)
-    const parentDivCodeEditor = document.querySelector(SELECTORS.parentDivCodeEditor)
+    const parentDiv = findParent([FALLBACK_SELECTORS.parentDiv])
+    const parentDivCodeEditor = findParent([FALLBACK_SELECTORS.parentDivCodeEditor])
 
     if (parentDiv) {
       injectButtonsToParent(
         parentDiv,
-        "leetpush-div-edit",
-        "leetpush-btn-edit",
-        "Edit",
-        "leetpush-div",
-        "leetpush-btn",
+        'leetpush-div-edit',
+        'leetpush-btn-edit',
+        'Edit',
+        'leetpush-div',
+        'leetpush-btn',
         `Push (${SHORTCUT_DISPLAY})`,
         false,
       )
@@ -180,11 +483,11 @@
     if (parentDivCodeEditor) {
       injectButtonsToParent(
         parentDivCodeEditor,
-        "leetpush-div-edit-CodeEditor",
-        "leetpush-btn-edit-CodeEditor",
-        "Edit",
-        "leetpush-div-CodeEditor",
-        "leetpush-btn-CodeEditor",
+        'leetpush-div-edit-CodeEditor',
+        'leetpush-btn-edit-CodeEditor',
+        'Edit',
+        'leetpush-div-CodeEditor',
+        'leetpush-btn-CodeEditor',
         `Push (${SHORTCUT_DISPLAY})`,
         true,
       )
@@ -201,166 +504,64 @@
     pushText,
     isCodeEditor,
   ) {
-    // Don't inject if already present
-    if (document.getElementById(editContainerId) || document.getElementById(pushContainerId)) {
-      return
-    }
+    if (document.getElementById(editContainerId) || document.getElementById(pushContainerId)) return
 
     const editButton = createButton(editContainerId, editButtonId, editText, () => {
-      localStorage.removeItem("branch")
+      localStorage.removeItem('branch')
       handlePushClick()
     })
 
     const pushButton = createButton(pushContainerId, pushButtonId, pushText, handlePushClick)
 
-    // Check if this is CodeEditor layout
     if (isCodeEditor) {
-      // For CodeEditor layout, ADD dividers and icons
-      const divider1 = document.createElement("div")
-      divider1.style.backgroundColor = "#0f0f0f"
-      divider1.style.width = "1px"
-      divider1.style.height = "100%"
-      divider1.style.flexShrink = "0"
-
-      const divider2 = document.createElement("div")
-      divider2.style.backgroundColor = "#0f0f0f"
-      divider2.style.width = "1px"
-      divider2.style.height = "100%"
-      divider2.style.flexShrink = "0"
-
+      const divider1 = document.createElement('div')
+      divider1.style.cssText = 'background-color:#0f0f0f;width:1px;height:100%;flex-shrink:0'
+      const divider2 = document.createElement('div')
+      divider2.style.cssText = 'background-color:#0f0f0f;width:1px;height:100%;flex-shrink:0'
       parent.appendChild(divider1)
       parent.appendChild(editButton)
       parent.appendChild(divider2)
       parent.appendChild(pushButton)
     } else {
-      // For toolbar layout, don't add dividers
       parent.appendChild(editButton)
       parent.appendChild(pushButton)
     }
   }
 
   function createButton(containerId, buttonId, text, clickHandler) {
-    const container = document.createElement("div")
+    const container = document.createElement('div')
     container.id = containerId
 
-    const button = document.createElement("button")
+    const button = document.createElement('button')
     button.id = buttonId
     button.textContent = text
-    button.addEventListener("click", clickHandler)
+
+    container.addEventListener('click', () => {
+      if (!button.disabled) clickHandler()
+    })
 
     container.appendChild(button)
     return container
   }
 
-  // Problem info extraction
-  async function extractProblemInfo() {
-    try {
-      const probNameElement = document.querySelector(SELECTORS.problemName)
-      if (!probNameElement) {
-        console.error("Problem name element not found")
-        return null
-      }
-
-      const probNameText = probNameElement.textContent?.trim() || ""
-      if (!probNameText) {
-        console.error("Problem name is empty")
-        return null
-      }
-
-      const probNum = probNameText.split(".")[0]?.trim() || ""
-      const probName =
-        probNameText
-          .replace(/^\d+\./, "")
-          .trim()
-          .replaceAll(" ", "-") || ""
-
-      if (!probNum || !probName) {
-        console.error("Invalid problem number or name:", { probNum, probName })
-        return null
-      }
-
-      // Get solution language
-      const langElement = document.querySelector(SELECTORS.solutionLanguage)
-      if (!langElement) {
-        console.error("Language element not found")
-        return null
-      }
-
-      const solutionLangText = langElement.textContent?.trim() || ""
-      if (!solutionLangText || !FILE_EXTENSIONS[solutionLangText]) {
-        console.error("Invalid solution language:", solutionLangText)
-        return null
-      }
-
-      const fileExt = FILE_EXTENSIONS[solutionLangText]
-      const fileName = `${probName}${fileExt}`
-
-      // Get solution from localStorage or DOM
-      const solutionsId = localStorage.key(0)?.split("_")[1] || ""
-      let solution = localStorage.getItem(`${probNum}_${solutionsId}_${LOCAL_STORAGE_KEYS[solutionLangText]}`)
-
-      if (!solution) {
-        const codeElement = document.querySelector(SELECTORS.codeBlock)
-        solution = codeElement?.textContent || ""
-      } else {
-        solution = solution.replace(/\\n/g, "\n").replace(/ {2}/g, "  ").replace(/"/g, "")
-      }
-
-      if (!solution) {
-        console.error("Solution not found")
-        return null
-      }
-
-      // Store in sessionStorage with proper values
-      sessionStorage.setItem("fileName", fileName)
-      sessionStorage.setItem("solution", solution)
-
-      // Get performance metrics and create commit message
-      let commitMsg = ""
-      if (DATABASE_LANGUAGES.includes(solutionLangText)) {
-        const metrics = document.querySelectorAll(SELECTORS.performanceMetrics)
-        const queryRuntimeText = metrics[1]?.textContent || "N/A"
-        commitMsg = `[${probNum}] [Time Beats: ${queryRuntimeText}] - LeetPush`
-      } else {
-        const metrics = document.querySelectorAll(SELECTORS.performanceMetrics)
-        const runtimeText = metrics[1]?.textContent || "N/A"
-        const memoryText = metrics[3]?.textContent || "N/A"
-        commitMsg = `[${probNum}] [Time Beats: ${runtimeText}] [Memory Beats: ${memoryText}] - LeetPush`
-      }
-
-      sessionStorage.setItem("commitMsg", commitMsg)
-
-      // Log successful extraction
-      console.log("Problem info extracted successfully:", {
-        probNum,
-        probName,
-        fileName,
-        solution: solution.substring(0, 50) + "...",
-        commitMsg,
-        language: solutionLangText,
-      })
-
-      return {
-        probNum,
-        probName,
-        fileName,
-        solution,
-        commitMsg,
-        language: solutionLangText,
-      }
-    } catch (error) {
-      console.error("Error extracting problem info:", error)
-      return null
-    }
+  function updateButtonLabels() {
+    const btns = [
+      document.querySelector('#leetpush-btn'),
+      document.querySelector('#leetpush-btn-CodeEditor'),
+    ]
+    btns.forEach((btn) => {
+      if (btn) btn.textContent = `Push (${SHORTCUT_DISPLAY})`
+    })
   }
 
-  // Modal creation and handling
+  // ─── Config Modal ─────────────────────────────────────────────────────────
+
   function createConfigModal() {
-    const modal = document.createElement("div")
-    modal.id = "lp-modal"
+    const modal = document.createElement('div')
+    modal.id = 'lp-modal'
     modal.innerHTML = `
     <div id="lp-container">
-      <div id="lp-close-btn"><button>X</button></div>
+      <div id="lp-close-btn"><button aria-label="Close">✕</button></div>
       <h3>Leet<span>Push</span></h3>
       <form id="lp-form">
         <div class="lp-div">
@@ -375,13 +576,27 @@
           <label>Target directory push:</label>
           <input type="text" id="custom-dir" name="custom-dir" placeholder="Leave empty to push to the root.">
         </div>
+        <div class="lp-push-mode">
+          <label>Push mode:</label>
+          <div id="lp-push-mode-radios">
+            <div class="radio-div">
+              <input type="radio" id="push-mode-single" name="push-mode" value="single" checked>
+              <label for="push-mode-single">Single file</label>
+            </div>
+            <div class="radio-div">
+              <input type="radio" id="push-mode-folder" name="push-mode" value="folder">
+              <label for="push-mode-folder">Folder per problem</label>
+            </div>
+          </div>
+          <p class="lp-hint">Folder mode pushes <code>{id}-{slug}/solution + README.md</code> in one commit.</p>
+        </div>
         <div class="lp-keyboard-shortcut">
           <label>Keyboard shortcut:</label>
           <div class="shortcut-config">
             <select id="shortcut-modifier">
-              <option value="meta">${isMac ? "⌘ Command" : "⊞ Windows"}</option>
+              <option value="meta">${isMac ? '⌘ Command' : '⊞ Windows'}</option>
               <option value="ctrl">Ctrl</option>
-              <option value="alt">${isMac ? "⌥ Option" : "Alt"}</option>
+              <option value="alt">${isMac ? '⌥ Option' : 'Alt'}</option>
               <option value="shift">⇧ Shift</option>
             </select>
             <span>+</span>
@@ -417,27 +632,23 @@
         <button id="lp-submit-btn" type="submit">Submit</button>
       </form>
     </div>
-  `
+    `
 
-    // Add event listeners
-    modal.querySelector("#lp-close-btn button")?.addEventListener("click", () => {
+    modal.querySelector('#lp-close-btn button')?.addEventListener('click', () => {
       document.body.removeChild(modal)
     })
 
-    // Close modal when clicking outside the modal container
-    modal.addEventListener("click", (event) => {
-      if (event.target === modal) {
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) document.body.removeChild(modal)
+    })
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && document.body.contains(modal)) {
         document.body.removeChild(modal)
       }
     })
 
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && document.body.contains(modal)) {
-        document.body.removeChild(modal)
-      }
-    })
-
-    modal.querySelector("#lp-form")?.addEventListener("submit", async (event) => {
+    modal.querySelector('#lp-form')?.addEventListener('submit', async (event) => {
       event.preventDefault()
       await saveConfig(modal)
     })
@@ -446,114 +657,108 @@
   }
 
   async function saveConfig(modal) {
-    const repoUrlInput = modal.querySelector("#repo-url")
-    const tokenInput = modal.querySelector("#token")
+    const repoUrlInput = modal.querySelector('#repo-url')
+    const tokenInput = modal.querySelector('#token')
     const branchInput = modal.querySelector('input[name="branch-name"]:checked')
     const separateFolderInput = modal.querySelector('input[name="daily-challenge"]:checked')
-    const customDirInput = modal.querySelector("#custom-dir")
-    const shortcutModifierInput = modal.querySelector("#shortcut-modifier")
-    const shortcutKeyInput = modal.querySelector("#shortcut-key")
+    const customDirInput = modal.querySelector('#custom-dir')
+    const shortcutModifierInput = modal.querySelector('#shortcut-modifier')
+    const shortcutKeyInput = modal.querySelector('#shortcut-key')
 
     if (!repoUrlInput || !tokenInput || !branchInput || !separateFolderInput) return
 
-    // Validate GitHub URL format
     const githubUrlPattern = /^https:\/\/github\.com\/[\w-]+\/[\w.-]+$/
     if (!githubUrlPattern.test(repoUrlInput.value)) {
-      alert("Please enter a valid GitHub repository URL (https://github.com/username/repository).")
+      showToast('Please enter a valid GitHub repository URL (https://github.com/username/repository).', 'error')
       return
     }
 
-    // Validate GitHub token (basic format check)
-    if (!tokenInput.value.startsWith("ghp_") && !tokenInput.value.startsWith("github_pat_")) {
-      alert('Please enter a valid GitHub token. It should start with "ghp_" or "github_pat_".')
+    if (!tokenInput.value.startsWith('ghp_') && !tokenInput.value.startsWith('github_pat_')) {
+      showToast('Please enter a valid GitHub token. It should start with "ghp_" or "github_pat_".', 'error')
       return
     }
 
-    const repoUrl = repoUrlInput.value.endsWith(".git") ? repoUrlInput.value.slice(0, -4) : repoUrlInput.value
-    const token = tokenInput.value
-    const branch = branchInput.value
-    const separateFolder = separateFolderInput.value
-    const customDir = customDirInput?.value || ""
+    const repoUrl = repoUrlInput.value.endsWith('.git')
+      ? repoUrlInput.value.slice(0, -4)
+      : repoUrlInput.value
 
-    // Save shortcut if provided
     if (shortcutModifierInput && shortcutKeyInput && shortcutKeyInput.value) {
-      const shortcutKey = shortcutKeyInput.value.toLowerCase()
-      const shortcutModifier = shortcutModifierInput.value
-
-      KEYBOARD_SHORTCUT = { key: shortcutKey, modifier: shortcutModifier }
+      KEYBOARD_SHORTCUT = {
+        key: shortcutKeyInput.value.toLowerCase(),
+        modifier: shortcutModifierInput.value,
+      }
       SHORTCUT_DISPLAY = getShortcutDisplayText(KEYBOARD_SHORTCUT)
-
-      localStorage.setItem("keyboard-shortcut", JSON.stringify(KEYBOARD_SHORTCUT))
-
-      // Update button labels with new shortcut
+      localStorage.setItem('keyboard-shortcut', JSON.stringify(KEYBOARD_SHORTCUT))
       updateButtonLabels()
     }
 
-    // Save to localStorage
-    localStorage.setItem("repo", repoUrl)
-    localStorage.setItem("token", token)
-    localStorage.setItem("branch", branch)
-    localStorage.setItem("separate-folder", separateFolder)
-    localStorage.setItem("custom-dir", customDir)
+    const pushModeInput = modal.querySelector('input[name="push-mode"]:checked')
+
+    localStorage.setItem('repo', repoUrl)
+    localStorage.setItem('token', tokenInput.value)
+    localStorage.setItem('branch', branchInput.value)
+    localStorage.setItem('separate-folder', separateFolderInput.value)
+    localStorage.setItem('custom-dir', customDirInput?.value || '')
+    localStorage.setItem('push-mode', pushModeInput?.value || 'single')
 
     document.body.removeChild(modal)
 
-    // Update README and description
     try {
-      await updateRepoDescription(token, repoUrl, branch)
+      await updateRepoDescription(tokenInput.value, repoUrl, branchInput.value)
     } catch (error) {
-      console.error("Error setting up repository metadata:", error)
-      showError("Initial repository setup failed. You may need to check your repository permissions.")
+      console.error('LeetPush: error setting up repository metadata:', error)
+      showToast('Initial repository setup failed. You may need to check your repository permissions.', 'error')
     }
-  }
-
-  function updateButtonLabels() {
-    const buttons = [document.querySelector("#leetpush-btn"), document.querySelector("#leetpush-btn-CodeEditor")]
-
-    buttons.forEach((button) => {
-      if (button) {
-        button.textContent = `Push (${SHORTCUT_DISPLAY})`
-      }
-    })
   }
 
   function showConfigModal() {
     const modal = createConfigModal()
 
-    // Pre-fill with existing values if available
-    const token = localStorage.getItem("token")
-    const repo = localStorage.getItem("repo")
-    const branch = localStorage.getItem("branch")
-    const separateFolder = localStorage.getItem("separate-folder")
-    const customDir = localStorage.getItem("custom-dir")
+    const token = localStorage.getItem('token')
+    const repo = localStorage.getItem('repo')
+    const branch = localStorage.getItem('branch')
+    const separateFolder = localStorage.getItem('separate-folder')
+    const customDir = localStorage.getItem('custom-dir')
 
-    // Pre-fill shortcut values
-    const shortcutModifierInput = modal.querySelector("#shortcut-modifier")
-    const shortcutKeyInput = modal.querySelector("#shortcut-key")
+    const shortcutModifierInput = modal.querySelector('#shortcut-modifier')
+    const shortcutKeyInput = modal.querySelector('#shortcut-key')
 
-    if (shortcutModifierInput) {
-      shortcutModifierInput.value = KEYBOARD_SHORTCUT.modifier
-    }
+    if (shortcutModifierInput) shortcutModifierInput.value = KEYBOARD_SHORTCUT.modifier
+    if (shortcutKeyInput) shortcutKeyInput.value = KEYBOARD_SHORTCUT.key.toUpperCase()
 
-    if (shortcutKeyInput) {
-      shortcutKeyInput.value = KEYBOARD_SHORTCUT.key.toUpperCase()
-    }
+    const pushMode = localStorage.getItem('push-mode')
 
-    if (token) modal.querySelector("#token").value = token
-    if (repo) modal.querySelector("#repo-url").value = repo
+    if (token) modal.querySelector('#token').value = token
+    if (repo) modal.querySelector('#repo-url').value = repo
     if (branch) modal.querySelector(`#branch-${branch}`).checked = true
     if (separateFolder) modal.querySelector(`#separate-folder-${separateFolder}`).checked = true
-    if (customDir) modal.querySelector("#custom-dir").value = customDir
+    if (customDir) modal.querySelector('#custom-dir').value = customDir
+    if (pushMode) modal.querySelector(`#push-mode-${pushMode}`).checked = true
 
     document.body.appendChild(modal)
   }
 
-  // Function to show error messages to the user
-  function showError(message) {
-    alert(`LeetPush Error: ${message}`)
+  // ─── GitHub API ───────────────────────────────────────────────────────────
+
+  function getGithubConfig() {
+    return {
+      token: localStorage.getItem('token') || '',
+      repo: localStorage.getItem('repo') || '',
+      branch: localStorage.getItem('branch') || '',
+      separateFolder: localStorage.getItem('separate-folder') || '',
+      customDir: localStorage.getItem('custom-dir') || '',
+      pushMode: localStorage.getItem('push-mode') || 'single',
+    }
   }
 
-  // GitHub API interactions
+  function isConfigComplete(config) {
+    return !!(config.token && config.repo && config.branch && config.separateFolder !== null)
+  }
+
+  function getPushButton() {
+    return document.querySelector('#leetpush-btn') || document.querySelector('#leetpush-btn-CodeEditor')
+  }
+
   async function handlePushClick() {
     const config = getGithubConfig()
 
@@ -564,58 +769,53 @@
 
     const pushBtn = getPushButton()
     if (!pushBtn) {
-      console.error("Push button not found")
-      showError("Interface error: Push button not found. Please refresh the page and try again.")
+      showToast('Interface error: Push button not found. Please refresh the page and try again.', 'error')
       return
     }
 
-    // Force a refresh of problem info
     const problemInfo = await extractProblemInfo()
     if (!problemInfo) {
-      console.error("Failed to extract problem info")
-      showError(
-        "Failed to extract problem information. This may happen if the page structure has changed or if you're not on a solution page.",
+      showToast(
+        'Failed to extract problem info. Make sure you are on an accepted submission page.',
+        'error',
       )
       return
     }
 
-    const fileName = problemInfo.fileName
-    const solution = problemInfo.solution
-    const commitMsg = problemInfo.commitMsg
-
+    const { fileName, solution, commitMsg } = problemInfo
     if (!fileName || !solution || !commitMsg) {
-      console.error("Missing required data:", {
-        fileName,
-        hasSolution: !!solution,
-        hasCommitMsg: !!commitMsg,
-      })
-
-      if (!fileName) {
-        showError("Failed to generate a valid file name for your solution.")
-      } else if (!solution) {
-        showError("Failed to extract your solution code. Please try again.")
-      } else {
-        showError("Failed to generate commit message. Please try again.")
-      }
+      if (!fileName) showToast('Failed to generate a valid file name for your solution.', 'error')
+      else if (!solution) showToast('Failed to extract your solution code. Please try again.', 'error')
+      else showToast('Failed to generate commit message. Please try again.', 'error')
       return
     }
 
-    const [userName, repoName] = config.repo.split("/").slice(3, 5)
+    const [userName, repoName] = config.repo.split('/').slice(3, 5)
     if (!userName || !repoName) {
-      console.error("Invalid repository URL:", config.repo)
-      showError(
-        "Invalid repository URL format. Please check your settings and provide a valid GitHub repository URL (e.g., https://github.com/username/repository).",
+      showToast(
+        'Invalid repository URL format. Please check your settings.',
+        'error',
       )
       showConfigModal()
       return
     }
 
     pushBtn.disabled = true
-    pushBtn.textContent = "Loading..."
-    pushBtn.classList.add("loading")
+    pushBtn.textContent = 'Loading...'
+    pushBtn.classList.add('loading')
+
+    // Fetch full problem data only when folder mode is on
+    let fullProblemData = null
+    if (config.pushMode === 'folder') {
+      const titleSlug = getProblemSlugFromURL()
+      if (titleSlug) fullProblemData = await fetchFullProblemData(titleSlug)
+      if (!fullProblemData) {
+        showToast('Could not fetch problem description. Falling back to single-file mode.', 'info')
+      }
+    }
 
     try {
-      const result = await pushToGithub(
+      await pushToGithub(
         userName,
         repoName,
         config.branch,
@@ -625,62 +825,75 @@
         config.token,
         config.separateFolder,
         config.customDir,
+        config.pushMode,
+        problemInfo,
+        fullProblemData,
       )
 
-      pushBtn.classList.remove("loading")
-      pushBtn.classList.add("success")
-      pushBtn.textContent = "Done"
-      await sleep(2000)
-      pushBtn.disabled = false
-      pushBtn.classList.remove("success")
-      pushBtn.textContent = `Push (${SHORTCUT_DISPLAY})`
+      pushBtn.classList.remove('loading')
+      pushBtn.classList.add('success')
+      pushBtn.textContent = 'Done'
+      showToast('Solution pushed to GitHub!', 'success')
 
-      // Update statistics
-      const solutionsPushed = Number.parseInt(localStorage.getItem("solutions-pushed") || "0") + 1
-      localStorage.setItem("solutions-pushed", solutionsPushed.toString())
+      const solutionsPushed = Number.parseInt(localStorage.getItem('solutions-pushed') || '0') + 1
+      localStorage.setItem('solutions-pushed', solutionsPushed.toString())
 
-      // Check if it's a daily challenge
       try {
         const [, dailyProblemNum] = await getDailyChallenge()
-
-        if (problemInfo && dailyProblemNum === problemInfo.probNum) {
-          const dailyChallenges = Number.parseInt(localStorage.getItem("daily-challenges") || "0") + 1
-          localStorage.setItem("daily-challenges", dailyChallenges.toString())
+        if (dailyProblemNum === problemInfo.probNum) {
+          const dailyChallenges = Number.parseInt(localStorage.getItem('daily-challenges') || '0') + 1
+          localStorage.setItem('daily-challenges', dailyChallenges.toString())
         }
       } catch (error) {
-        console.error("Error checking daily challenge:", error)
-        // Non-critical error, don't show to user
+        console.error('LeetPush: error checking daily challenge:', error)
       }
-    } catch (error) {
-      console.error("Failed to push solution:", error)
-      showError(error.message || "Unknown error occurred while pushing solution")
 
-      pushBtn.classList.remove("loading")
-      pushBtn.classList.add("error")
-      pushBtn.textContent = "Error"
       await sleep(2000)
       pushBtn.disabled = false
-      pushBtn.classList.remove("error")
+      pushBtn.classList.remove('success')
       pushBtn.textContent = `Push (${SHORTCUT_DISPLAY})`
+    } catch (error) {
+      console.error('LeetPush: failed to push solution:', error)
+
+      const errorMessage = error.message || ''
+      const isAuthError =
+        errorMessage.includes('401') ||
+        errorMessage.includes('Authentication failed') ||
+        errorMessage.includes('invalid or expired')
+
+      if (isAuthError) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('branch')
+        showToast('Authentication failed. Your GitHub token is invalid or expired. Please enter a new token.', 'error')
+        pushBtn.classList.remove('loading')
+        pushBtn.disabled = false
+        pushBtn.textContent = `Push (${SHORTCUT_DISPLAY})`
+        showConfigModal()
+      } else {
+        showToast(errorMessage || 'Unknown error occurred while pushing solution.', 'error')
+        pushBtn.classList.remove('loading')
+        pushBtn.classList.add('error')
+        pushBtn.textContent = 'Error'
+        await sleep(2000)
+        pushBtn.disabled = false
+        pushBtn.classList.remove('error')
+        pushBtn.textContent = `Push (${SHORTCUT_DISPLAY})`
+      }
     }
   }
 
-  function getGithubConfig() {
-    return {
-      token: localStorage.getItem("token") || "",
-      repo: localStorage.getItem("repo") || "",
-      branch: localStorage.getItem("branch") || "",
-      separateFolder: localStorage.getItem("separate-folder") || "",
-      customDir: localStorage.getItem("custom-dir") || "",
+  async function resolveDailyPrefix(problemInfo, separateFolder) {
+    if (separateFolder !== 'yes') return ''
+    try {
+      const [date, dailyProblemNum] = await getDailyChallenge()
+      if (problemInfo && dailyProblemNum === problemInfo.probNum) {
+        const splitDate = date.split('-')
+        return `DCP-${splitDate[1]}-${splitDate[0].slice(2)}`
+      }
+    } catch (error) {
+      console.error('LeetPush: error checking daily challenge folder:', error)
     }
-  }
-
-  function isConfigComplete(config) {
-    return !!(config.token && config.repo && config.branch && config.separateFolder !== null)
-  }
-
-  function getPushButton() {
-    return document.querySelector("#leetpush-btn") || document.querySelector("#leetpush-btn-CodeEditor")
+    return ''
   }
 
   async function pushToGithub(
@@ -693,295 +906,258 @@
     token,
     separateFolder,
     customDir,
+    pushMode,
+    problemInfo,
+    fullProblemData,
   ) {
-    try {
-      // Check if fileName is valid
-      if (!fileName || fileName.trim() === "") {
-        console.error("Invalid file name:", fileName)
-        throw new Error("Invalid file name. Please try again with a different solution.")
-      }
+    if (!fileName?.trim()) throw new Error('Invalid file name. Please try again.')
+    if (!content?.trim()) throw new Error('No solution content found. Please make sure your solution is visible on the page.')
 
-      // Check if content is valid
-      if (!content || content.trim() === "") {
-        console.error("Invalid content:", content)
-        throw new Error("No solution content found. Please make sure your solution is visible on the page.")
-      }
+    const dailyPrefix = await resolveDailyPrefix(problemInfo, separateFolder)
 
-      // Debug logs to track values
-      console.log("Debug - fileName:", fileName)
-      console.log("Debug - commitMsg:", commitMsg)
-      console.log("Debug - content length:", content.length)
+    if (pushMode === 'folder' && fullProblemData) {
+      // Build {id}-{slug} folder name
+      const folderName = `${problemInfo.probNum}-${problemInfo.probName.toLowerCase()}`
 
-      // Determine file path
-      let filePath = fileName
+      // Assemble path: [customDir/][dailyPrefix/]{id}-{slug}
+      const parts = [customDir, dailyPrefix, folderName].filter(Boolean)
+      const folderPath = parts.join('/')
 
-      if (customDir) {
-        filePath = `${customDir}/${fileName}`
-      } else if (separateFolder === "yes") {
-        try {
-          const [date, dailyProblemNum] = await getDailyChallenge()
-          const problemInfo = await extractProblemInfo()
-
-          if (problemInfo && dailyProblemNum === problemInfo.probNum) {
-            const splitDate = date.split("-")
-            const dailyFolder = `DCP-${splitDate[1]}-${splitDate[0].slice(2)}`
-            filePath = `${dailyFolder}/${fileName}`
-          }
-        } catch (error) {
-          console.error("Error processing daily challenge folder:", error)
-          // Continue without separate folder if there's an error
-        }
-      }
-
-      // Ensure filePath is not empty
-      if (!filePath || filePath.trim() === "") {
-        console.error("Invalid file path:", filePath)
-        throw new Error("Failed to generate a valid file path. Please check your target directory settings.")
-      }
-
-      console.log("Debug - final filePath:", filePath)
-
-      // Push file to repo
-      return await pushFileToRepo(userName, repoName, filePath, branch, content, commitMsg, token)
-    } catch (error) {
-      console.error("Error in pushToGithub:", error)
-      throw error // Propagate the error to be handled by the caller
+      const readme = buildReadme(fullProblemData, fileName)
+      return await pushFolderToRepo(userName, repoName, folderPath, branch, readme, content, fileName, commitMsg, token)
     }
+
+    // Single-file mode
+    const parts = [customDir, dailyPrefix, fileName].filter(Boolean)
+    const filePath = parts.join('/')
+
+    if (!filePath?.trim()) throw new Error('Failed to generate a valid file path. Please check your target directory settings.')
+    return await pushFileToRepo(userName, repoName, filePath, branch, content, commitMsg, token)
   }
 
   async function pushFileToRepo(userName, repoName, filePath, branch, content, commitMsg, token) {
-    if (!filePath || !content || !commitMsg) {
-      console.error("Missing required parameters:", {
-        filePath,
-        hasContent: !!content,
-        hasCommitMsg: !!commitMsg,
-      })
-      throw new Error("Missing required file information. Please try again.")
-    }
-
     const apiUrl = `${BASE_URL}/${userName}/${repoName}/contents/${filePath}`
-    console.log("API URL:", apiUrl)
 
-    try {
-      // Check if repo exists
-      const repoCheckResponse = await fetch(`${BASE_URL}/${userName}/${repoName}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      console.log("Repo check response:", repoCheckResponse)
+    const repoCheckResponse = await fetch(`${BASE_URL}/${userName}/${repoName}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
 
-      if (!repoCheckResponse.ok) {
-        const errorData = await repoCheckResponse.json()
-        console.error("Repository check error:", errorData)
-
-        // Handle different error cases with specific messages
-        if (repoCheckResponse.status === 404) {
-          throw new Error(
-            `Repository not found: ${userName}/${repoName}. Please check if the repository exists and your token has access to it.`,
-          )
-        } else if (repoCheckResponse.status === 401) {
-          throw new Error(
-            "Authentication failed. Your GitHub token may be invalid or expired. Please generate a new token.",
-          )
-        } else if (repoCheckResponse.status === 403) {
-          throw new Error("Access forbidden. Your token may not have sufficient permissions to access this repository.")
-        } else {
-          throw new Error(`Repository access error: ${errorData.message || "Unknown error"}`)
-        }
+    if (!repoCheckResponse.ok) {
+      const errorData = await repoCheckResponse.json()
+      if (repoCheckResponse.status === 404) {
+        throw new Error(`Repository not found: ${userName}/${repoName}. Please check if the repository exists and your token has access to it.`)
+      } else if (repoCheckResponse.status === 401) {
+        throw new Error('Authentication failed. Your GitHub token may be invalid or expired.')
+      } else if (repoCheckResponse.status === 403) {
+        throw new Error('Access forbidden. Your token may not have sufficient permissions.')
+      } else {
+        throw new Error(`Repository access error: ${errorData.message || 'Unknown error'}`)
       }
-
-      // Prepare request body with proper content encoding
-      const encodedContent = btoa(unescape(encodeURIComponent(content)))
-      const requestBody = {
-        message: commitMsg,
-        content: encodedContent,
-        branch: branch,
-      }
-
-      // Check if file exists and get the latest SHA
-      let fileExistsRes
-      try {
-        fileExistsRes = await fetch(`${apiUrl}?ref=${branch}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        console.log("File exists response:", fileExistsRes)
-      } catch (error) {
-        console.error("Error checking if file exists:", error)
-        throw new Error("Network error while checking if file already exists in repository.")
-      }
-
-      if (fileExistsRes.ok) {
-        try {
-          const existingFileData = await fileExistsRes.json()
-          if (existingFileData && existingFileData.sha) {
-            requestBody.sha = existingFileData.sha
-            console.log("Found existing file SHA:", existingFileData.sha)
-          }
-        } catch (error) {
-          console.error("Error parsing existing file data:", error)
-          throw new Error("Error processing existing file data from GitHub.")
-        }
-      } else if (fileExistsRes.status !== 404) {
-        // 404 is expected if file doesn't exist yet
-        const errorData = await fileExistsRes.json()
-        console.error("Error checking file existence:", errorData)
-
-        if (fileExistsRes.status === 403) {
-          throw new Error(
-            'Permission denied. Make sure your token has "contents: write" permission on this repository.',
-          )
-        } else if (fileExistsRes.status === 401) {
-          throw new Error("Authentication failed. Your GitHub token may be invalid or expired.")
-        } else {
-          throw new Error(`Error checking file: ${errorData.message || "Unknown error"}`)
-        }
-      }
-
-      // Make the API call to push the file
-      let response = await fetch(apiUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(requestBody),
-      })
-      console.log("Response status:", response.status)
-
-      // Handle SHA mismatch (409 conflict) error - retry up to 3 times
-      let retryCount = 0
-      const maxRetries = 3
-
-      while (response.status === 409 && retryCount < maxRetries) {
-        console.log(
-          `SHA mismatch detected (attempt ${retryCount + 1}/${maxRetries}), fetching updated SHA and retrying...`,
-        )
-        retryCount++
-
-        try {
-          // Get the latest SHA again
-          const latestShaRes = await fetch(`${apiUrl}?ref=${branch}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          })
-
-          if (!latestShaRes.ok) {
-            console.error(`Failed to get latest SHA on retry ${retryCount}, status: ${latestShaRes.status}`)
-            continue // Skip to next retry attempt
-          }
-
-          const latestFileData = await latestShaRes.json()
-          if (latestFileData && latestFileData.sha) {
-            // Update the SHA in the request body
-            requestBody.sha = latestFileData.sha
-            console.log(`Using updated SHA on retry ${retryCount}: ${latestFileData.sha}`)
-
-            // Retry the request with the updated SHA
-            response = await fetch(apiUrl, {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify(requestBody),
-            })
-            console.log(`Retry ${retryCount} response status:`, response.status)
-
-            if (response.ok) {
-              break // Success, exit the retry loop
-            }
-          } else {
-            console.error("Failed to get valid SHA from response:", latestFileData)
-            break
-          }
-        } catch (retryError) {
-          console.error(`Error during retry ${retryCount}:`, retryError)
-          break // Exit retry loop on error
-        }
-
-        // Small delay between retries to avoid rate limiting
-        await sleep(500)
-      }
-
-      if (!response.ok) {
-        let errorMessage = `GitHub API Error: ${response.status}`
-        try {
-          const errorData = await response.json()
-          errorMessage += ` - ${errorData.message || "Unknown error"}`
-          console.error("GitHub API error details:", errorData)
-        } catch (jsonError) {
-          console.error("Failed to parse error response:", jsonError)
-        }
-        throw new Error(errorMessage)
-      }
-
-      const responseData = await response.json()
-      console.log("File successfully pushed:", responseData.content.html_url)
-      return true
-    } catch (error) {
-      console.error("Error pushing file to repo:", error)
-      // Don't show alert here, just propagate the error to be handled by the caller
-      throw error
     }
+
+    const encodedContent = btoa(unescape(encodeURIComponent(content)))
+    const requestBody = { message: commitMsg, content: encodedContent, branch }
+
+    let fileExistsRes
+    try {
+      fileExistsRes = await fetch(`${apiUrl}?ref=${branch}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+    } catch {
+      throw new Error('Network error while checking if file already exists in repository.')
+    }
+
+    if (fileExistsRes.ok) {
+      const existingFileData = await fileExistsRes.json()
+      if (existingFileData?.sha) requestBody.sha = existingFileData.sha
+    } else if (fileExistsRes.status !== 404) {
+      const errorData = await fileExistsRes.json()
+      if (fileExistsRes.status === 403) {
+        throw new Error('Permission denied. Make sure your token has "contents: write" permission.')
+      } else if (fileExistsRes.status === 401) {
+        throw new Error('Authentication failed. Your GitHub token may be invalid or expired.')
+      } else {
+        throw new Error(`Error checking file: ${errorData.message || 'Unknown error'}`)
+      }
+    }
+
+    let response = await fetch(apiUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(requestBody),
+    })
+
+    // Retry on SHA mismatch (409)
+    let retries = 0
+    while (response.status === 409 && retries < 3) {
+      retries++
+      try {
+        const latestRes = await fetch(`${apiUrl}?ref=${branch}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        if (!latestRes.ok) break
+        const latestData = await latestRes.json()
+        if (!latestData?.sha) break
+        requestBody.sha = latestData.sha
+        response = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify(requestBody),
+        })
+        if (response.ok) break
+      } catch {
+        break
+      }
+      await sleep(500)
+    }
+
+    if (!response.ok) {
+      let msg = `GitHub API Error: ${response.status}`
+      try {
+        const err = await response.json()
+        msg += ` — ${err.message || 'Unknown error'}`
+      } catch { /* ignore */ }
+      throw new Error(msg)
+    }
+
+    return true
+  }
+
+  async function pushFolderToRepo(userName, repoName, folderPath, branch, readmeContent, solutionContent, solutionFileName, commitMsg, token) {
+    const apiBase = `${BASE_URL}/${userName}/${repoName}`
+
+    // 1. Get latest commit SHA for the branch
+    const refRes = await fetch(`${apiBase}/git/ref/heads/${branch}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!refRes.ok) {
+      const err = await refRes.json()
+      if (refRes.status === 401) throw new Error('Authentication failed. Your GitHub token may be invalid or expired.')
+      if (refRes.status === 404) throw new Error(`Branch "${branch}" not found in ${userName}/${repoName}.`)
+      throw new Error(`Failed to get branch ref: ${err.message || refRes.status}`)
+    }
+    const refData = await refRes.json()
+    const latestCommitSha = refData.object.sha
+
+    // 2. Get base tree SHA from commit
+    const commitRes = await fetch(`${apiBase}/git/commits/${latestCommitSha}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!commitRes.ok) throw new Error('Failed to fetch latest commit data.')
+    const commitData = await commitRes.json()
+    const baseTreeSha = commitData.tree.sha
+
+    // 3. Create blobs
+    const createBlob = async (content) => {
+      const res = await fetch(`${apiBase}/git/blobs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ content: btoa(unescape(encodeURIComponent(content))), encoding: 'base64' }),
+      })
+      if (!res.ok) throw new Error('Failed to create file blob on GitHub.')
+      const data = await res.json()
+      return data.sha
+    }
+
+    const [readmeSha, solutionSha] = await Promise.all([
+      createBlob(readmeContent),
+      createBlob(solutionContent),
+    ])
+
+    // 4. Create new tree with both files
+    const treeRes = await fetch(`${apiBase}/git/trees`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({
+        base_tree: baseTreeSha,
+        tree: [
+          { path: `${folderPath}/README.md`, mode: '100644', type: 'blob', sha: readmeSha },
+          { path: `${folderPath}/${solutionFileName}`, mode: '100644', type: 'blob', sha: solutionSha },
+        ],
+      }),
+    })
+    if (!treeRes.ok) throw new Error('Failed to create Git tree on GitHub.')
+    const treeData = await treeRes.json()
+
+    // 5. Create commit
+    const newCommitRes = await fetch(`${apiBase}/git/commits`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({
+        message: commitMsg,
+        tree: treeData.sha,
+        parents: [latestCommitSha],
+      }),
+    })
+    if (!newCommitRes.ok) throw new Error('Failed to create Git commit on GitHub.')
+    const newCommitData = await newCommitRes.json()
+
+    // 6. Update branch ref
+    const updateRes = await fetch(`${apiBase}/git/refs/heads/${branch}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ sha: newCommitData.sha }),
+    })
+    if (!updateRes.ok) {
+      const err = await updateRes.json()
+      throw new Error(`Failed to update branch: ${err.message || updateRes.status}`)
+    }
+
+    return true
   }
 
   async function updateRepoDescription(token, repo, branch) {
-    const [userName, repoName] = repo.split("/").slice(3, 5)
-    const description = "This repository is managed by LeetPush extension: https://github.com/LeetPushExtension/LeetPush"
-
+    const [userName, repoName] = repo.split('/').slice(3, 5)
     try {
       await fetch(`${BASE_URL}/${userName}/${repoName}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ description }),
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          description: 'This repository is managed by LeetPush extension: https://github.com/LeetPushExtension/LeetPush',
+        }),
       })
     } catch (error) {
-      console.error("Error updating repo metadata:", error)
+      console.error('LeetPush: error updating repo metadata:', error)
     }
   }
 
   async function getDailyChallenge() {
-    const response = await fetch("https://leetcode.com/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+    const response = await fetch('https://leetcode.com/graphql', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         query: `{
-        activeDailyCodingChallengeQuestion {
-          date
-          question {
-            frontendQuestionId: questionFrontendId
+          activeDailyCodingChallengeQuestion {
+            date
+            question { frontendQuestionId: questionFrontendId }
           }
-        }
-      }`,
+        }`,
       }),
     })
-
     const data = await response.json()
-    return [
-      data.data.activeDailyCodingChallengeQuestion.date,
-      data.data.activeDailyCodingChallengeQuestion.question.frontendQuestionId,
-    ]
+    const q = data.data.activeDailyCodingChallengeQuestion
+    return [q.date, q.question.frontendQuestionId]
   }
 
-  // Initialize on page load
+  // ─── Init ─────────────────────────────────────────────────────────────────
+
+  function initLeetPush() {
+    if (isSubmissionPage() && hasAcceptedSolution()) {
+      injectButtons()
+      extractProblemInfo()
+      registerKeyboardShortcut()
+    }
+  }
+
+  injectToastStyles()
   initLeetPush()
 
-  // Re-initialize on DOM changes (for single-page apps)
-  const observer = new MutationObserver((mutations) => {
+  const observer = new MutationObserver(() => {
     if (isSubmissionPage() && hasAcceptedSolution()) {
-      const hasButtons = document.getElementById("leetpush-btn") || document.getElementById("leetpush-btn-CodeEditor")
-      if (!hasButtons) {
-        initLeetPush()
-      }
+      const hasButtons =
+        document.getElementById('leetpush-btn') ||
+        document.getElementById('leetpush-btn-CodeEditor')
+      if (!hasButtons) initLeetPush()
     }
   })
 

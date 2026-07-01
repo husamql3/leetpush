@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: cd popup && bun install
+
+      - name: Build popup
+        run: cd popup && bun run build
+
+      - name: Get version from manifest
+        id: version
+        run: echo "version=$(node -p "require('./manifest.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Zip extension
+        run: |
+          zip -r "leetpush-${{ steps.version.outputs.version }}.zip" \
+            manifest.json \
+            background.js \
+            content-script.js \
+            style.css \
+            images/ \
+            dist/ \
+            assets/ \
+            --exclude "*.DS_Store"
+
+      - name: Upload to Chrome Web Store
+        uses: fregante/chrome-webstore-upload-action@v2
+        with:
+          file-name: leetpush-${{ steps.version.outputs.version }}.zip
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          skip-finish-if-not-changed: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: leetpush-${{ steps.version.outputs.version }}.zip
+          generate_release_notes: true

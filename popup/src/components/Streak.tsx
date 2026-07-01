@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-
 import { UserStreakI } from "@/types/leetpush.interface.ts";
 import { formatStreak, getDayColor, streakEmoji } from "@/lib/utils.ts";
 
@@ -14,32 +13,35 @@ export default function Streak({ data }: { data: UserStreakI }) {
   }, [streakArray]);
 
   return (
-    <div className="">
-      <p className="mb-3 text-center text-sm font-medium">
-        Your Max Streak:{" "}
-        <span className="font-semibold underline">{data.maxStreak}</span>{" "}
-        {streakEmoji(96)}
-      </p>
+    <div className="rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-zinc-500 text-xs font-medium uppercase tracking-wide">Streak</p>
+        <p className="text-zinc-300 text-xs">
+          Max{" "}
+          <span className="text-zinc-100 font-semibold">{data.maxStreak}</span>
+          {" "}{streakEmoji(data.maxStreak)}
+        </p>
+      </div>
 
       <div
-        className="scrollbar-hidden flex gap-4 overflow-x-scroll"
+        className="scrollbar-hidden flex gap-3 overflow-x-scroll"
         ref={endRef}
       >
         {streakArray.map((entry, i) => (
           <div
             key={i}
-            className="scrollbar-hidden flex min-w-[91px] flex-col justify-between gap-1"
+            className="scrollbar-hidden flex min-w-[91px] flex-col gap-1.5"
           >
-            <div className="grid grid-cols-5 gap-x-0.5 gap-y-1">
-              {entry.days.map((daysEntry, i) => (
+            <div className="grid grid-cols-5 gap-x-0.5 gap-y-0.5">
+              {entry.days.map((daysEntry, j) => (
                 <div
-                  key={i}
-                  className="h-[14px] w-[14px] rounded-[0.175rem] bg-red-700"
+                  key={j}
+                  className="h-[13px] w-[13px] rounded-[3px]"
                   style={{ backgroundColor: getDayColor(daysEntry.value) }}
                 />
               ))}
             </div>
-            <p className="text-lp-grey text-center">{entry.month}</p>
+            <p className="text-zinc-600 text-center text-xs">{entry.month}</p>
           </div>
         ))}
       </div>

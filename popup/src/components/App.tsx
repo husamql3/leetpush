@@ -11,9 +11,11 @@ export default function App() {
   const { username } = useContext(UserContext);
 
   return (
-    <main className="space-y-1 bg-stone-900 px-4 py-5 text-stone-100">
-      <Links />
-      <Logo />
+    <main className="bg-zinc-950 px-4 py-4 text-zinc-100">
+      <div className="flex items-center justify-between mb-1">
+        <Logo />
+        <Links />
+      </div>
       {username ? <LeetCode /> : <InputForm />}
       {username && <EditButton />}
       <Footer />

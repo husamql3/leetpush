@@ -4,60 +4,65 @@
 #leetpush-div-CodeEditor,
 #leetpush-div-edit-CodeEditor {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   text-align: center;
   font-size: 13px;
   transition: all 0.2s ease;
   position: relative;
+  cursor: pointer;
+}
+
+#leetpush-div button,
+#leetpush-div-edit button,
+#leetpush-div-CodeEditor button,
+#leetpush-div-edit-CodeEditor button {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 /** ToolBar Layout **/
-/* Push Button */
 #leetpush-div-CodeEditor {
-	background-color: transparent !important;
-	margin-left: 0 !important;
-	border-radius: 0 !important;
+  background-color: transparent !important;
+  margin-left: 0 !important;
+  border-radius: 0 !important;
 }
 
 #leetpush-div-CodeEditor:hover {
-	background-color: rgb(226 181 92 / 10%) !important;
+  background-color: rgb(226 181 92 / 10%) !important;
 }
 
 #leetpush-btn-CodeEditor {
-	color: #E7A41F !important;
-	padding-inline: .75rem !important;
+  color: #E7A41F !important;
+  padding-inline: .75rem !important;
 }
 
-/* Edit Button */
 #leetpush-div-edit-CodeEditor {
-	background-color: transparent !important;
-	margin-left: 0 !important;
-	border-radius: 0 !important;
+  background-color: transparent !important;
+  margin-left: 0 !important;
+  border-radius: 0 !important;
 }
 
 #leetpush-div-edit-CodeEditor:hover {
-	background-color: #3e3e3e !important;
+  background-color: #3e3e3e !important;
 }
 
-#leetpush-btn-edit-CodeEditor{
-	color: #fff9 !important;
-	padding-inline: .75rem !important;
+#leetpush-btn-edit-CodeEditor {
+  color: #fff9 !important;
+  padding-inline: .75rem !important;
 }
 
 /** CodeEditor Layout **/
-
 #leetpush-div-edit {
-	margin-left: 0.5rem !important;
+  margin-left: 0.5rem !important;
 }
 
-/* No background for toolbar */
 #leetpush-div,
 #leetpush-div-edit {
   border: none;
   padding: 0 !important;
 }
 
-/* Base button styles */
 #leetpush-btn,
 #leetpush-btn-CodeEditor,
 #leetpush-btn-edit,
@@ -72,7 +77,6 @@
   cursor: pointer;
 }
 
-/* Edit button colors */
 #leetpush-btn-edit,
 #leetpush-btn-edit-CodeEditor {
   color: rgba(255, 255, 255, 0.8);
@@ -87,7 +91,6 @@
   padding-block: 0.25rem;
 }
 
-/* Icon for CodeEditor push button */
 #leetpush-btn-CodeEditor::before {
   content: "";
   display: inline-block;
@@ -97,7 +100,6 @@
   background-size: cover;
 }
 
-/* Icon for CodeEditor edit button */
 #leetpush-btn-edit-CodeEditor::before {
   content: "";
   display: inline-block;
@@ -107,13 +109,11 @@
   background-size: cover;
 }
 
-/* No icons for toolbar buttons */
 #leetpush-btn::before,
 #leetpush-btn-edit::before {
   display: none;
 }
 
-/* Disabled button state */
 #leetpush-btn:disabled,
 #leetpush-btn-CodeEditor:disabled,
 #leetpush-btn-edit:disabled,
@@ -122,7 +122,6 @@
   cursor: not-allowed;
 }
 
-/* Different states for buttons */
 #leetpush-btn.loading::before,
 #leetpush-btn-CodeEditor.loading::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e7a41e'%3E%3Cpath d='M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8Z'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 12 12' to='360 12 12' dur='1s' repeatCount='indefinite'/%3E%3C/path%3E%3C/svg%3E");
@@ -135,7 +134,6 @@
   display: inline-block;
 }
 
-/* Success state with checkmark on the right */
 #leetpush-btn.success,
 #leetpush-btn-CodeEditor.success {
   position: relative;
@@ -164,72 +162,69 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.6);
-  animation: fadeIn 0.2s ease;
+  background-color: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(2px);
+  animation: lp-fade-in 0.18s ease;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+@keyframes lp-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 #lp-container {
-  width: 350px;
+  width: 500px !important;
   max-height: 90vh;
   overflow-y: auto;
-  background-color: rgb(48, 48, 48);
-  box-shadow: 0 1px 3px #0000003d, 0 10px 28px -4px #0000007a;
-  border-radius: 1rem;
-  padding: 1.5rem 2rem 2rem;
+  background-color: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 1.5rem 1.75rem 1.75rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  animation: slideIn 0.3s ease;
+  gap: 0;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  animation: lp-slide-in 0.22s cubic-bezier(0.21,1.02,0.73,1);
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a2a transparent;
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+@keyframes lp-slide-in {
+  from { transform: translateY(-14px) scale(0.97); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 #lp-close-btn {
   display: flex;
   justify-content: flex-end;
-  font-size: 1rem;
+  margin-bottom: -0.25rem;
 }
 
 #lp-close-btn > button {
   background: none;
   border: none;
-  color: #999;
-  font-size: 1.2rem;
+  color: #555;
+  font-size: 18px;
+  line-height: 1;
   cursor: pointer;
-  padding: 5px;
-  border-radius: 50%;
-  transition: background-color 0.2s ease;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  font-family: inherit;
 }
 
 #lp-close-btn > button:hover {
-  color: #fff;
+  color: #e0e0e0;
+  background: #252525;
 }
 
 #lp-container h3 {
-  color: white;
+  color: #e0e0e0;
   text-align: center;
-  font-size: 24px;
-  padding-bottom: 1rem;
-  font-weight: bold;
-  margin-top: 0;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 1.25rem;
+  letter-spacing: -0.01em;
 }
 
 #lp-container h3 span {
@@ -239,194 +234,240 @@
 #lp-form {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 1.3rem;
+  gap: 1.1rem;
 }
 
+/* Field wrapper */
 .lp-div {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: 0.4rem;
 }
 
-#lp-form input[type="text"] {
+/* All text inputs and select */
+#lp-form input[type="text"],
+#shortcut-modifier {
   width: 100%;
-  border-radius: 0.2rem;
-  padding: 0.5rem;
-  margin: 0;
-  border: none;
-  outline: none;
-  background-color: white;
+  background-color: #1e1e1e;
+  border: 1px solid #2e2e2e;
+  border-radius: 7px;
+  padding: 0.45rem 0.65rem;
+  color: #e0e0e0;
   font-family: inherit;
-  font-size: inherit;
-  color: black;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
   box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-#lp-form input[type="text"]:focus {
-  box-shadow: 0 0 0 2px #e7a41e;
+#shortcut-key {
+  background-color: #1e1e1e;
+  border: 1px solid #2e2e2e;
+  border-radius: 7px;
+  padding: 0.45rem 0;
+  color: #e0e0e0;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-.lp-div:nth-child(2) label {
+#lp-form input[type="text"]::placeholder {
+  color: #444;
+}
+
+#lp-form input[type="text"]:focus,
+#shortcut-key:focus,
+#shortcut-modifier:focus {
+  border-color: #e7a41e;
+}
+
+/* Token link */
+.lp-div:nth-child(2) > label {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .lp-div:nth-child(2) label a {
-  font-size: 10px;
-  text-decoration: underline;
+  font-size: 11px;
   color: #e7a41e;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.15s;
 }
 
 .lp-div:nth-child(2) label a:hover {
-  color: #e2b65c;
-}
-
-#lp-radios {
-  display: flex;
-  justify-content: space-evenly;
-  margin-top: 0.5rem;
-}
-
-.radio-div {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-#lp-submit-btn {
-  border: none;
-  cursor: pointer;
-  background-color: #e7a41e;
-  border-radius: 0.5rem;
-  line-height: 18px;
-  font-weight: 600;
-  font-size: 13px;
-  padding: 0.375rem 1.25rem;
-  user-select: none;
-  height: 32px;
-  color: #070706;
-  transition: background-color 0.2s ease;
-  margin-top: 0.5rem;
-}
-
-#lp-submit-btn:hover {
-  background-color: #e2b65c;
+  opacity: 1;
 }
 
 /* Labels */
 #lp-form label {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 14px;
+  color: #888;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
-/* Radio buttons */
+/* Radio groups */
+.lp-daily-challenge,
+#lp-form > div:has(input[name="branch-name"]) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+#lp-radios {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.1rem;
+}
+
+.radio-div {
+  display: flex;
+  align-items: stretch;
+  background: #1e1e1e;
+  border: 1px solid #2e2e2e;
+  border-radius: 7px;
+  cursor: pointer;
+  flex: 1;
+  transition: border-color 0.15s;
+  overflow: hidden;
+}
+
+.radio-div:has(input:checked) {
+  border-color: #e7a41e33;
+  background: #e7a41e0d;
+}
+
+.radio-div label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.35rem 0.7rem;
+  color: #bbb !important;
+  font-size: 13px !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-weight: 400 !important;
+  cursor: pointer;
+}
+
+.radio-div:has(input:checked) label {
+  color: #e7a41e !important;
+}
+
 #lp-form input[type="radio"] {
-  accent-color: #e7a41e;
+  display: none;
 }
 
-/* Shortcut Configuration Styles */
+/* Push mode */
+.lp-push-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+#lp-push-mode-radios {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.lp-hint {
+  font-size: 11px;
+  color: #444;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.lp-hint code {
+  background: #252525;
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-size: 10px;
+  color: #666;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+/* Keyboard shortcut */
 .lp-keyboard-shortcut {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .shortcut-config {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 0.5rem;
-}
-
-#shortcut-key {
-  width: 40px;
-  text-align: center;
-  text-transform: uppercase;
-  border-radius: 0.2rem;
-  padding: 0.5rem;
-  border: none;
-  outline: none;
-  background-color: white;
-  font-family: inherit;
-  font-size: inherit;
-  color: black;
-  box-sizing: border-box;
-}
-
-#shortcut-key:focus {
-  box-shadow: 0 0 0 2px #e7a41e;
+  gap: 6px;
 }
 
 #shortcut-modifier {
-  min-width: 120px;
-  border-radius: 0.2rem;
-  padding: 0.5rem;
-  border: none;
-  outline: none;
-  background-color: white;
-  font-family: inherit;
-  font-size: inherit;
-  color: black;
-  box-sizing: border-box;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 28px;
 }
 
-#shortcut-modifier:focus {
-  box-shadow: 0 0 0 2px #e7a41e;
-}
-
-.shortcut-config span {
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: bold;
-}
-
-/* Improve the dropdown appearance */
 #shortcut-modifier option {
-  background-color: white;
-  color: black;
-  padding: 5px;
+  background: #1e1e1e;
+  color: #e0e0e0;
 }
 
-/* Add a custom focus style for keyboard navigation */
-#shortcut-modifier:focus,
-#shortcut-key:focus {
-  box-shadow: 0 0 0 2px #e7a41e;
-  outline: none;
+#shortcut-key {
+  flex: 0 0 44px;
+  width: 44px;
+  text-align: center;
+  text-transform: uppercase;
 }
 
-/* Hover effects */
-#shortcut-modifier:hover,
-#shortcut-key:hover {
-  background-color: #f5f5f5;
+.shortcut-config > span {
+  color: #555;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
 }
 
-/* Animation for shortcut section */
-.lp-keyboard-shortcut {
-  animation: fadeIn 0.4s ease;
-  animation-delay: 0.2s;
-  animation-fill-mode: both;
+/* Submit button */
+#lp-submit-btn {
+  border: none;
+  cursor: pointer;
+  background-color: #e7a41e;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 0.5rem 1.25rem;
+  height: 36px;
+  color: #0a0a0a;
+  transition: background-color 0.15s, opacity 0.15s;
+  margin-top: 0.25rem;
+  font-family: inherit;
+  letter-spacing: 0.01em;
 }
 
-/* Responsive adjustments for smaller screens */
+#lp-submit-btn:hover {
+  background-color: #f0b030;
+}
+
+#lp-submit-btn:active {
+  opacity: 0.85;
+}
+
 @media (max-width: 400px) {
   .shortcut-config {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 5px;
   }
-
-  #shortcut-modifier {
-    width: 100%;
-    min-width: unset;
-  }
-
-  #shortcut-key {
-    width: 100%;
-  }
-
-  .shortcut-config span {
-    display: none;
-  }
+  .shortcut-config > span { display: none; }
 }
-
