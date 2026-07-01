@@ -94,8 +94,7 @@
   const FALLBACK_SELECTORS = {
     parentDiv:
       'div.flex.justify-between.py-1.pl-3.pr-1 > div.relative.flex.overflow-hidden.rounded.bg-fill-tertiary.dark\\:bg-fill-tertiary.\\!bg-transparent > div.flex-none.flex > div:nth-child(2)',
-    parentDivCodeEditor:
-      '#ide-top-btns > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > div > div:last-child',
+    parentDivCodeEditor: '#ide-top-btns > div > div',
     performanceMetrics:
       'div.flex.items-center.justify-between.gap-2 > div > div.rounded-sd.flex.min-w-\\[275px\\].flex-1.cursor-pointer.flex-col.px-4.py-3.text-xs > div:nth-child(2) > span.font-semibold',
   }
@@ -513,19 +512,8 @@ ${content || ''}
 
     const pushButton = createButton(pushContainerId, pushButtonId, pushText, handlePushClick)
 
-    if (isCodeEditor) {
-      const divider1 = document.createElement('div')
-      divider1.style.cssText = 'background-color:#0f0f0f;width:1px;height:100%;flex-shrink:0'
-      const divider2 = document.createElement('div')
-      divider2.style.cssText = 'background-color:#0f0f0f;width:1px;height:100%;flex-shrink:0'
-      parent.appendChild(divider1)
-      parent.appendChild(editButton)
-      parent.appendChild(divider2)
-      parent.appendChild(pushButton)
-    } else {
-      parent.appendChild(editButton)
-      parent.appendChild(pushButton)
-    }
+    parent.appendChild(editButton)
+    parent.appendChild(pushButton)
   }
 
   function createButton(containerId, buttonId, text, clickHandler) {

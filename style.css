@@ -21,35 +21,45 @@
   pointer-events: none;
 }
 
-/** ToolBar Layout **/
-#leetpush-div-CodeEditor {
-  background-color: transparent !important;
-  margin-left: 0 !important;
-  border-radius: 0 !important;
+/** Code Editor Layout — match LeetCode's group/icon-button style **/
+#leetpush-div-CodeEditor,
+#leetpush-div-edit-CodeEditor {
+  flex: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 5px !important;
+  background-color: var(--fill-tertiary, #ffffff14) !important;
+  margin-left: 0.375rem !important;
+  border: none !important;
+  overflow: hidden !important;
 }
 
-#leetpush-div-CodeEditor:hover {
-  background-color: rgb(226 181 92 / 10%) !important;
+#leetpush-div-CodeEditor:hover,
+#leetpush-div-edit-CodeEditor:hover {
+  background-color: var(--fill-secondary, #ffffff1a) !important;
+}
+
+#leetpush-btn-CodeEditor,
+#leetpush-btn-edit-CodeEditor {
+  position: relative;
+  display: flex !important;
+  align-items: center !important;
+  cursor: pointer !important;
+  padding: 0.5rem !important;
+  background: none !important;
+  border: none !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: normal !important;
+  white-space: nowrap !important;
 }
 
 #leetpush-btn-CodeEditor {
   color: #E7A41F !important;
-  padding-inline: .75rem !important;
-}
-
-#leetpush-div-edit-CodeEditor {
-  background-color: transparent !important;
-  margin-left: 0 !important;
-  border-radius: 0 !important;
-}
-
-#leetpush-div-edit-CodeEditor:hover {
-  background-color: #3e3e3e !important;
 }
 
 #leetpush-btn-edit-CodeEditor {
-  color: #fff9 !important;
-  padding-inline: .75rem !important;
+  color: var(--gray-60, #949494) !important;
 }
 
 /** CodeEditor Layout **/
@@ -105,7 +115,7 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(255, 255, 255, 0.8)'%3E%3Cpath d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'%3E%3C/path%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23949494'%3E%3Cpath d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'%3E%3C/path%3E%3C/svg%3E");
   background-size: cover;
 }
 
