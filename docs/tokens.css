@@ -1,0 +1,43 @@
+/* Hallmark · macrostructure: Marquee Hero · tone: atmospheric · anchor hue: yellow */
+
+:root {
+  /* Colour */
+  --color-paper:        oklch(8% 0.015 255);
+  --color-paper-2:      oklch(11% 0.018 255);
+  --color-paper-3:      oklch(16% 0.020 255);
+  --color-ink:          oklch(96% 0.004 255);
+  --color-ink-2:        oklch(62% 0.010 255);
+  --color-ink-3:        oklch(42% 0.010 255);
+  --color-accent:       oklch(84% 0.185 88);
+  --color-accent-mid:   oklch(84% 0.185 88 / 0.14);
+  --color-accent-glow:  oklch(84% 0.185 88 / 0.20);
+  --color-accent-border:oklch(84% 0.185 88 / 0.28);
+  --color-border:       oklch(22% 0.015 255);
+  --color-focus:        oklch(84% 0.185 88);
+
+  /* Typography */
+  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+
+  /* Spacing (4-pt scale) */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  40px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+
+  /* Radii */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-pill: 100px;
+
+  /* Motion */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.85, 0, 0.15, 1);
+  --dur-fast:    120ms;
+  --dur-base:    200ms;
+  --dur-slow:    400ms;
+}

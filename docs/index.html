@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeetPush — Push LeetCode solutions to GitHub automatically</title>
+  <meta name="description" content="One-click Chrome extension that automatically pushes your LeetCode solutions to your GitHub repository. No copy-paste, no manual commits.">
+
+  <link rel="icon" href="../images/icon-128.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="tokens.css">
+
+  <style>
+    /* Hallmark · macrostructure: Marquee Hero · tone: atmospheric · anchor hue: yellow */
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      overflow-x: clip;
+      margin: 0;
+      padding: 0;
+      height: 100dvh;
+      background-color: var(--color-paper);
+      color: var(--color-ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header — sticky, transparent until scrolled */
+    #site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      width: 100%;
+      border-bottom: 1px solid transparent;
+      transition:
+        border-color var(--dur-base) var(--ease-out),
+        background-color var(--dur-base) var(--ease-out),
+        backdrop-filter var(--dur-base) var(--ease-out);
+    }
+
+    #site-header.scrolled {
+      border-bottom-color: var(--color-border);
+      background-color: oklch(8% 0.015 255 / 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* Atmospheric radial glow crown */
+    .glow-crown {
+      position: absolute;
+      top: -160px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 960px;
+      height: 640px;
+      background: radial-gradient(ellipse at top, var(--color-accent-glow) 0%, transparent 68%);
+      pointer-events: none;
+    }
+
+    /* Eyebrow badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 14px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--color-accent-border);
+      background: var(--color-accent-mid);
+      color: var(--color-accent);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.025em;
+    }
+
+    /* Primary CTA */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 13px 26px;
+      background: var(--color-accent);
+      color: var(--color-paper);
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      white-space: nowrap;
+      transition:
+        filter var(--dur-base) var(--ease-out),
+        transform var(--dur-fast) var(--ease-out),
+        box-shadow var(--dur-base) var(--ease-out);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.12);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 32px var(--color-accent-glow);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      filter: brightness(0.95);
+    }
+
+    .btn-primary:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 3px;
+    }
+
+    /* Secondary CTA */
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 13px 26px;
+      background: transparent;
+      color: var(--color-ink-2);
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      font-weight: 500;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      text-decoration: none;
+      white-space: nowrap;
+      transition:
+        color var(--dur-base) var(--ease-out),
+        border-color var(--dur-base) var(--ease-out),
+        transform var(--dur-fast) var(--ease-out);
+    }
+
+    .btn-secondary:hover {
+      color: var(--color-ink);
+      border-color: oklch(40% 0.015 255);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary:active { transform: translateY(0); }
+
+    .btn-secondary:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 3px;
+    }
+
+    /* Screenshots grid */
+    .screenshots {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .screenshots figure {
+      margin: 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      box-shadow:
+        0 28px 72px oklch(0% 0 0 / 0.5),
+        0 0 0 1px oklch(100% 0 0 / 0.04),
+        0 0 48px var(--color-accent-glow);
+    }
+
+    .screenshots img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Footer */
+    .footer-author-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .footer-author-link:hover { text-decoration: underline; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .screenshots { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition-duration: 150ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header id="site-header">
+    <nav style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1040px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 10px 24px;
+    ">
+      <a href="/" style="display: flex; align-items: center; gap: 9px; text-decoration: none;">
+        <img src="../images/icon-128.png" alt="" width="26" height="26" style="border-radius: var(--radius-sm);">
+        <span style="
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-size: 0.9375rem;
+          color: var(--color-ink);
+        ">LeetPush</span>
+      </a>
+
+      <a href="https://github.com/husamahmud/LeetPush"
+         target="_blank" rel="noopener"
+         class="btn-secondary"
+         style="padding: 7px 14px; font-size: 0.8125rem;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+        GitHub
+      </a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <main style="flex: 1; display: flex; align-items: center;">
+    <section style="position: relative; overflow: hidden; width: 100%; padding: 130px 24px 56px;">
+
+      <div class="glow-crown" aria-hidden="true"></div>
+
+      <div style="position: relative; z-index: 1; max-width: 780px; margin: 0 auto; text-align: center;">
+
+        <!-- Eyebrow -->
+        <div style="display: flex; justify-content: center; margin-bottom: 22px;">
+          <span class="badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            Free Chrome Extension
+          </span>
+        </div>
+
+        <!-- Headline -->
+        <h1 style="
+          font-family: var(--font-display);
+          font-size: clamp(2rem, 5.5vw, 3.5rem);
+          font-weight: 800;
+          font-style: normal;
+          line-height: 1.1;
+          letter-spacing: -0.025em;
+          color: var(--color-ink);
+          margin: 0 0 20px;
+          overflow-wrap: anywhere;
+          min-width: 0;
+        ">
+          Push your LeetCode grind<br>to GitHub. Automatically.
+        </h1>
+
+        <!-- Sub -->
+        <p style="
+          font-size: clamp(1rem, 2vw, 1.125rem);
+          line-height: 1.75;
+          color: var(--color-ink-2);
+          max-width: 500px;
+          margin: 0 auto 36px;
+        ">
+          Solve a problem. Click push. Your solution commits directly to your GitHub repo — proper file structure, zero copy-paste.
+        </p>
+
+        <!-- CTAs -->
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 56px;">
+          <a href="https://chromewebstore.google.com/detail/leetpush/gmagfdabfjaipjgdfgddjgongeemkalf"
+             target="_blank" rel="noopener"
+             class="btn-primary">
+            <!-- Puzzle piece — Chrome extension icon -->
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.743-.953a3.08 3.08 0 0 0 .034-.443c0-1.702-1.388-3.09-3.09-3.09a3.09 3.09 0 0 0-.443.034.981.981 0 0 1-.952-.743.98.98 0 0 1 .275-.837l1.61-1.611A2.404 2.404 0 0 1 17.245 7c.617 0 1.234.236 1.704.706l.49.49v-.346z"/>
+              <path d="M10.56 16.56a.98.98 0 0 0-.276.837c.07.47.48.802.953.743.147-.019.295-.028.443-.028 1.702 0 3.09 1.388 3.09 3.09 0 .148-.01.296-.028.443a.981.981 0 0 0 .742.952.98.98 0 0 0 .838-.275l1.61-1.61A2.404 2.404 0 0 0 18.638 19c0-.617-.236-1.234-.706-1.704l-1.568-1.568a1.168 1.168 0 0 0-.878-.289c-.322.049-.63.186-.878.434z"/>
+              <path d="M4.561 7.85c.049.322-.059.648-.289.878L2.704 10.296C2.234 10.766 2 11.383 2 12s.235 1.233.706 1.704l1.61 1.611a.98.98 0 0 0 .838.276c.47-.07.802-.48.743-.953A3.08 3.08 0 0 1 5.863 14c0-1.702 1.388-3.09 3.09-3.09.148 0 .296.012.443.034a.981.981 0 0 0 .952-.743.98.98 0 0 0-.275-.837L8.462 7.753A2.404 2.404 0 0 0 6.758 7c-.617 0-1.234.236-1.704.706l-.49.49v-.346z"/>
+              <path d="M13.44 7.44a.98.98 0 0 1 .276-.837.981.981 0 0 1 .952-.743c-.147.019-.295.028-.443.028-1.702 0-3.09-1.388-3.09-3.09 0-.148.01-.296.028-.443a.981.981 0 0 0-.742-.952.98.98 0 0 0-.838.275L7.972 4.289A2.404 2.404 0 0 0 7.266 5c0 .617.236 1.234.706 1.704l1.568 1.568c.23.23.556.338.878.289.322-.049.63-.186.878-.434z"/>
+            </svg>
+            Add to Chrome — It's free
+          </a>
+
+          <a href="https://github.com/husamahmud/LeetPush"
+             target="_blank" rel="noopener"
+             class="btn-secondary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            View on GitHub
+          </a>
+        </div>
+
+        <!-- Screenshots -->
+        <div class="screenshots">
+          <figure>
+            <img
+              src="https://lh3.googleusercontent.com/gcD16UOKv-wEyKtoLGk1uEnXorucRqCq_FoiRS7W44FVnAwTMZWGkfrjD-tIQ1fbU2fS9YtTuJ9ZhTvHTtMwlAa3Vg=s1280-w1280-h800"
+              alt="LeetPush popup showing GitHub connection setup"
+              width="640" height="400"
+              loading="lazy"
+            >
+          </figure>
+          <figure>
+            <img
+              src="https://lh3.googleusercontent.com/sicEMkwf9N23XMbOXnxQMOAA487elVyDcUEtE-tgTYLeOeSipd86fv7IqhzV9mqfmfkbkreLS7Z-x-QTOi_LbL4cMA=s1280-w1280-h800"
+              alt="LeetPush push button on a LeetCode problem page"
+              width="640" height="400"
+              loading="lazy"
+            >
+          </figure>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer style="
+    position: relative;
+    z-index: 10;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    background: black;
+    padding: 16px 24px;
+  ">
+    <p style="
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 300;
+      color: var(--color-ink-3);
+      font-size: 0.75rem;
+      margin: 0;
+    ">
+      © 2026 LeetPush. Built by
+      <a href="https://github.com/husamql3"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="footer-author-link">
+        <img src="https://img.icons8.com/color-pixels/32/avocado.png" alt="Hüsam" width="16" height="16">
+        Hüsam
+      </a>
+    </p>
+  </footer>
+</body>
+</html>
