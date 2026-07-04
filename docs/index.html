@@ -5,8 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LeetPush — Push LeetCode solutions to GitHub automatically</title>
   <meta name="description" content="One-click Chrome extension that automatically pushes your LeetCode solutions to your GitHub repository. No copy-paste, no manual commits.">
+  <meta name="author" content="Hüsam">
+  <meta name="robots" content="index, follow">
 
-  <link rel="icon" href="../images/icon-128.png">
+  <!-- Canonical -->
+  <link rel="canonical" href="https://leetpushextension.github.io/LeetPush/">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="128x128" href="https://raw.githubusercontent.com/LeetPushExtension/LeetPush/master/images/icon-128.png">
+  <link rel="icon" type="image/png" sizes="32x32"  href="https://raw.githubusercontent.com/LeetPushExtension/LeetPush/master/images/icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16"  href="https://raw.githubusercontent.com/LeetPushExtension/LeetPush/master/images/icon-16.png">
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://leetpushextension.github.io/LeetPush/">
+  <meta property="og:site_name"   content="LeetPush">
+  <meta property="og:title"       content="LeetPush — Push LeetCode solutions to GitHub automatically">
+  <meta property="og:description" content="One-click Chrome extension that automatically pushes your LeetCode solutions to your GitHub repository. No copy-paste, no manual commits.">
+  <meta property="og:image"       content="https://lh3.googleusercontent.com/gcD16UOKv-wEyKtoLGk1uEnXorucRqCq_FoiRS7W44FVnAwTMZWGkfrjD-tIQ1fbU2fS9YtTuJ9ZhTvHTtMwlAa3Vg=s1280-w1280-h800">
+  <meta property="og:image:width"  content="1280">
+  <meta property="og:image:height" content="800">
+  <meta property="og:image:alt"   content="LeetPush popup and push button on LeetCode">
+  <meta property="og:locale"      content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="LeetPush — Push LeetCode solutions to GitHub automatically">
+  <meta name="twitter:description" content="One-click Chrome extension that automatically pushes your LeetCode solutions to your GitHub repository. No copy-paste, no manual commits.">
+  <meta name="twitter:image"       content="https://lh3.googleusercontent.com/gcD16UOKv-wEyKtoLGk1uEnXorucRqCq_FoiRS7W44FVnAwTMZWGkfrjD-tIQ1fbU2fS9YtTuJ9ZhTvHTtMwlAa3Vg=s1280-w1280-h800">
+  <meta name="twitter:image:alt"   content="LeetPush popup and push button on LeetCode">
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "LeetPush",
+    "description": "One-click Chrome extension that automatically pushes your LeetCode solutions to your GitHub repository. No copy-paste, no manual commits.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Chrome",
+    "url": "https://leetpushextension.github.io/LeetPush/",
+    "downloadUrl": "https://chromewebstore.google.com/detail/leetpush/gmagfdabfjaipjgdfgddjgongeemkalf",
+    "softwareVersion": "1.8.1",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Hüsam", "url": "https://github.com/husamql3" },
+    "screenshot": "https://lh3.googleusercontent.com/gcD16UOKv-wEyKtoLGk1uEnXorucRqCq_FoiRS7W44FVnAwTMZWGkfrjD-tIQ1fbU2fS9YtTuJ9ZhTvHTtMwlAa3Vg=s1280-w1280-h800"
+  }
+  </script>
 
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -215,7 +260,7 @@
       padding: 10px 24px;
     ">
       <a href="/" style="display: flex; align-items: center; gap: 9px; text-decoration: none;">
-        <img src="../images/icon-128.png" alt="" width="26" height="26" style="border-radius: var(--radius-sm);">
+        <img src="https://raw.githubusercontent.com/LeetPushExtension/LeetPush/master/images/icon-32.png" alt="" width="26" height="26" style="border-radius: var(--radius-sm);">
         <span style="
           font-family: var(--font-display);
           font-weight: 700;
@@ -286,14 +331,7 @@
           <a href="https://chromewebstore.google.com/detail/leetpush/gmagfdabfjaipjgdfgddjgongeemkalf"
              target="_blank" rel="noopener"
              class="btn-primary">
-            <!-- Puzzle piece — Chrome extension icon -->
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.743-.953a3.08 3.08 0 0 0 .034-.443c0-1.702-1.388-3.09-3.09-3.09a3.09 3.09 0 0 0-.443.034.981.981 0 0 1-.952-.743.98.98 0 0 1 .275-.837l1.61-1.611A2.404 2.404 0 0 1 17.245 7c.617 0 1.234.236 1.704.706l.49.49v-.346z"/>
-              <path d="M10.56 16.56a.98.98 0 0 0-.276.837c.07.47.48.802.953.743.147-.019.295-.028.443-.028 1.702 0 3.09 1.388 3.09 3.09 0 .148-.01.296-.028.443a.981.981 0 0 0 .742.952.98.98 0 0 0 .838-.275l1.61-1.61A2.404 2.404 0 0 0 18.638 19c0-.617-.236-1.234-.706-1.704l-1.568-1.568a1.168 1.168 0 0 0-.878-.289c-.322.049-.63.186-.878.434z"/>
-              <path d="M4.561 7.85c.049.322-.059.648-.289.878L2.704 10.296C2.234 10.766 2 11.383 2 12s.235 1.233.706 1.704l1.61 1.611a.98.98 0 0 0 .838.276c.47-.07.802-.48.743-.953A3.08 3.08 0 0 1 5.863 14c0-1.702 1.388-3.09 3.09-3.09.148 0 .296.012.443.034a.981.981 0 0 0 .952-.743.98.98 0 0 0-.275-.837L8.462 7.753A2.404 2.404 0 0 0 6.758 7c-.617 0-1.234.236-1.704.706l-.49.49v-.346z"/>
-              <path d="M13.44 7.44a.98.98 0 0 1 .276-.837.981.981 0 0 1 .952-.743c-.147.019-.295.028-.443.028-1.702 0-3.09-1.388-3.09-3.09 0-.148.01-.296.028-.443a.981.981 0 0 0-.742-.952.98.98 0 0 0-.838.275L7.972 4.289A2.404 2.404 0 0 0 7.266 5c0 .617.236 1.234.706 1.704l1.568 1.568c.23.23.556.338.878.289.322-.049.63-.186.878-.434z"/>
-            </svg>
-            Add to Chrome — It's free
+            Add to Chrome It's free
           </a>
 
           <a href="https://github.com/husamahmud/LeetPush"
