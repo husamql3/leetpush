@@ -1101,7 +1101,7 @@ ${content || ''}
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
-          description: 'This repository is managed by LeetPush extension: https://github.com/LeetPushExtension/LeetPush',
+          description: 'This repository is managed by LeetPush extension: https://github.com/husamql3/leetpush',
         }),
       })
     } catch (error) {

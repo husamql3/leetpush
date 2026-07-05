@@ -5,7 +5,7 @@ import { SiBuymeacoffee } from "react-icons/si";
 export const LINKS = [
   {
     name: "github",
-    link: "https://github.com/LeetPushExtension/LeetPush",
+    link: "https://github.com/husamql3/leetpush",
     icon: <IoLogoGithub size="25" />,
   },
   {
@@ -15,7 +15,7 @@ export const LINKS = [
   },
   {
     name: "bug",
-    link: "https://github.com/LeetPushExtension/LeetPush/issues/new/choose",
+    link: "https://github.com/husamql3/leetpush/issues/new/choose",
     icon: <FaBug size="25" />,
   },
   {
