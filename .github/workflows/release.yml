@@ -37,14 +37,15 @@ jobs:
             assets/ \
             --exclude "*.DS_Store"
 
-      - name: Upload to Chrome Web Store
-        uses: wdzeng/chrome-extension@src-v2.0.0
-        with:
-          zip-path: leetpush-${{ steps.version.outputs.version }}.zip
-          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
-          client-id: ${{ secrets.CHROME_CLIENT_ID }}
-          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+      - name: Upload & Publish to Chrome Web Store
+        env:
+          EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+        run: |
+          npx chrome-webstore-upload-cli upload --source "leetpush-${{ steps.version.outputs.version }}.zip"
+          npx chrome-webstore-upload-cli publish
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
