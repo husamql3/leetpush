@@ -739,6 +739,189 @@ ${content || ''}
     }
   }
 
+  // ─── Fetch Existing Folders from GitHub Repo ──────────────────────────────
+
+  async function fetchRepoFolders(userName, repoName, branch, token, customDir) {
+    try {
+      const path = customDir ? customDir : ''
+      const url = path
+        ? `${BASE_URL}/${userName}/${repoName}/contents/${path}?ref=${branch}`
+        : `${BASE_URL}/${userName}/${repoName}/contents?ref=${branch}`
+
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      if (!res.ok) return []
+
+      const items = await res.json()
+      if (!Array.isArray(items)) return []
+
+      return items
+        .filter((item) => item.type === 'dir')
+        .map((item) => item.name)
+        .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+    } catch {
+      return []
+    }
+  }
+
+  // ─── Folder Picker Modal ──────────────────────────────────────────────────
+
+  function createFolderPickerModal(problemInfo, topicTags, existingFolders, onConfirm, onCancel) {
+    const modal = document.createElement('div')
+    modal.id = 'lp-folder-modal'
+
+    const tagButtons = (topicTags || [])
+      .map((tag) => `<span class="lp-topic-tag" data-folder="${tag.name}">${tag.name}</span>`)
+      .join('')
+
+    const folderItems = existingFolders
+      .map((name) => `
+        <div class="lp-folder-item" data-folder="${name}">
+          <span class="lp-folder-item-icon">📁</span>
+          <span class="lp-folder-item-name">${name}</span>
+        </div>
+      `)
+      .join('')
+
+    const existingSection = existingFolders.length > 0
+      ? `<p class="lp-folder-section-label">Existing folders</p>
+         <div class="lp-existing-folders">${folderItems}</div>`
+      : `<p class="lp-folder-section-label">Existing folders</p>
+         <div class="lp-folders-empty">No folders found in your repo yet</div>`
+
+    const topicSection = topicTags && topicTags.length > 0
+      ? `<div>
+           <p class="lp-folder-section-label">Suggested topics</p>
+           <div class="lp-topic-tags">${tagButtons}</div>
+         </div>
+         <hr class="lp-folder-divider">`
+      : ''
+
+    modal.innerHTML = `
+      <div id="lp-folder-container">
+        <div class="lp-folder-header">
+          <p class="lp-folder-title">Push <span>"${problemInfo.probNum}. ${problemInfo.probName.replaceAll('-', ' ')}"</span> to folder:</p>
+          <button class="lp-folder-close" aria-label="Close">✕</button>
+        </div>
+
+        ${topicSection}
+
+        <div class="lp-folder-input-wrapper">
+          <p class="lp-folder-section-label">Folder name</p>
+          <input type="text" id="lp-folder-input" placeholder="Type a folder name (e.g. Arrays, Trees, DP)..." autocomplete="off">
+        </div>
+
+        <hr class="lp-folder-divider">
+
+        ${existingSection}
+
+        <div class="lp-folder-actions">
+          <button class="lp-folder-cancel-btn">Cancel</button>
+          <button class="lp-folder-confirm-btn">Push to Folder</button>
+        </div>
+      </div>
+    `
+
+    const input = modal.querySelector('#lp-folder-input')
+    const confirmBtn = modal.querySelector('.lp-folder-confirm-btn')
+
+    // Helper to clear all selections
+    const clearSelections = () => {
+      modal.querySelectorAll('.lp-topic-tag.selected').forEach((el) => el.classList.remove('selected'))
+      modal.querySelectorAll('.lp-folder-item.selected').forEach((el) => el.classList.remove('selected'))
+    }
+
+    // Topic tag click → fill input
+    modal.querySelectorAll('.lp-topic-tag').forEach((tag) => {
+      tag.addEventListener('click', () => {
+        clearSelections()
+        tag.classList.add('selected')
+        input.value = tag.dataset.folder
+        input.focus()
+      })
+    })
+
+    // Existing folder click → fill input
+    modal.querySelectorAll('.lp-folder-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        clearSelections()
+        item.classList.add('selected')
+        input.value = item.dataset.folder
+        input.focus()
+      })
+    })
+
+    // Typing clears pill/folder selections
+    input.addEventListener('input', () => {
+      clearSelections()
+      // Highlight matching existing folder if typed name matches exactly
+      modal.querySelectorAll('.lp-folder-item').forEach((item) => {
+        if (item.dataset.folder.toLowerCase() === input.value.trim().toLowerCase()) {
+          item.classList.add('selected')
+        }
+      })
+      // Highlight matching topic tag
+      modal.querySelectorAll('.lp-topic-tag').forEach((tag) => {
+        if (tag.dataset.folder.toLowerCase() === input.value.trim().toLowerCase()) {
+          tag.classList.add('selected')
+        }
+      })
+    })
+
+    // Close handlers
+    const closeModal = () => {
+      if (document.body.contains(modal)) document.body.removeChild(modal)
+    }
+
+    modal.querySelector('.lp-folder-close').addEventListener('click', () => {
+      closeModal()
+      onCancel()
+    })
+
+    modal.querySelector('.lp-folder-cancel-btn').addEventListener('click', () => {
+      closeModal()
+      onCancel()
+    })
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        closeModal()
+        onCancel()
+      }
+    })
+
+    document.addEventListener('keydown', function escHandler(event) {
+      if (event.key === 'Escape' && document.body.contains(modal)) {
+        closeModal()
+        onCancel()
+        document.removeEventListener('keydown', escHandler)
+      }
+    })
+
+    // Confirm handler
+    confirmBtn.addEventListener('click', () => {
+      const folderName = input.value.trim()
+      if (!folderName) {
+        showToast('Please enter or select a folder name.', 'error')
+        return
+      }
+      closeModal()
+      onConfirm(folderName)
+    })
+
+    // Enter key in input = confirm
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault()
+        confirmBtn.click()
+      }
+    })
+
+    return modal
+  }
+
   function isConfigComplete(config) {
     return !!(config.token && config.repo && config.branch && config.separateFolder !== null)
   }
@@ -788,19 +971,57 @@ ${content || ''}
       return
     }
 
+    // Fetch topic tags and existing folders concurrently for the folder picker
     pushBtn.disabled = true
     pushBtn.textContent = 'Loading...'
     pushBtn.classList.add('loading')
 
-    // Fetch full problem data only when folder mode is on
-    let fullProblemData = null
-    if (config.pushMode === 'folder') {
-      const titleSlug = getProblemSlugFromURL()
-      if (titleSlug) fullProblemData = await fetchFullProblemData(titleSlug)
-      if (!fullProblemData) {
-        showToast('Could not fetch problem description. Falling back to single-file mode.', 'info')
-      }
-    }
+    const titleSlug = getProblemSlugFromURL()
+    const [fullProblemData, existingFolders] = await Promise.all([
+      titleSlug ? fetchFullProblemData(titleSlug) : Promise.resolve(null),
+      fetchRepoFolders(userName, repoName, config.branch, config.token, config.customDir),
+    ])
+
+    const topicTags = fullProblemData?.topicTags || []
+
+    // Reset button while modal is open
+    pushBtn.classList.remove('loading')
+    pushBtn.disabled = false
+    pushBtn.textContent = `Push (${SHORTCUT_DISPLAY})`
+
+    // Show folder picker modal
+    const modal = createFolderPickerModal(
+      problemInfo,
+      topicTags,
+      existingFolders,
+      // onConfirm: user picked a folder
+      async (selectedFolder) => {
+        await executePush(config, userName, repoName, problemInfo, fullProblemData, selectedFolder)
+      },
+      // onCancel: user dismissed the modal
+      () => {
+        // Nothing to do — button is already reset
+      },
+    )
+
+    document.body.appendChild(modal)
+
+    // Auto-focus the input
+    setTimeout(() => {
+      const input = modal.querySelector('#lp-folder-input')
+      if (input) input.focus()
+    }, 100)
+  }
+
+  async function executePush(config, userName, repoName, problemInfo, fullProblemData, selectedFolder) {
+    const pushBtn = getPushButton()
+    if (!pushBtn) return
+
+    const { fileName, solution, commitMsg } = problemInfo
+
+    pushBtn.disabled = true
+    pushBtn.textContent = 'Pushing...'
+    pushBtn.classList.add('loading')
 
     try {
       await pushToGithub(
@@ -816,12 +1037,13 @@ ${content || ''}
         config.pushMode,
         problemInfo,
         fullProblemData,
+        selectedFolder,
       )
 
       pushBtn.classList.remove('loading')
       pushBtn.classList.add('success')
       pushBtn.textContent = 'Done'
-      showToast('Solution pushed to GitHub!', 'success')
+      showToast(`Solution pushed to "${selectedFolder}" folder!`, 'success')
 
       const solutionsPushed = Number.parseInt(localStorage.getItem('solutions-pushed') || '0') + 1
       localStorage.setItem('solutions-pushed', solutionsPushed.toString())
@@ -897,6 +1119,7 @@ ${content || ''}
     pushMode,
     problemInfo,
     fullProblemData,
+    selectedFolder,
   ) {
     if (!fileName?.trim()) throw new Error('Invalid file name. Please try again.')
     if (!content?.trim()) throw new Error('No solution content found. Please make sure your solution is visible on the page.')
@@ -907,16 +1130,16 @@ ${content || ''}
       // Build {id}-{slug} folder name
       const folderName = `${problemInfo.probNum}-${problemInfo.probName.toLowerCase()}`
 
-      // Assemble path: [customDir/][dailyPrefix/]{id}-{slug}
-      const parts = [customDir, dailyPrefix, folderName].filter(Boolean)
+      // Assemble path: [customDir/][selectedFolder/][dailyPrefix/]{id}-{slug}
+      const parts = [customDir, selectedFolder, dailyPrefix, folderName].filter(Boolean)
       const folderPath = parts.join('/')
 
       const readme = buildReadme(fullProblemData, fileName)
       return await pushFolderToRepo(userName, repoName, folderPath, branch, readme, content, fileName, commitMsg, token)
     }
 
-    // Single-file mode
-    const parts = [customDir, dailyPrefix, fileName].filter(Boolean)
+    // Single-file mode — include selectedFolder in path
+    const parts = [customDir, selectedFolder, dailyPrefix, fileName].filter(Boolean)
     const filePath = parts.join('/')
 
     if (!filePath?.trim()) throw new Error('Failed to generate a valid file path. Please check your target directory settings.')
