@@ -481,3 +481,279 @@
   }
   .shortcut-config > span { display: none; }
 }
+
+/** ─── Folder Picker Modal ─────────────────────────────────────────────── **/
+#lp-folder-modal {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 9999999;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(2px);
+  animation: lp-fade-in 0.18s ease;
+}
+
+#lp-folder-container {
+  width: 480px !important;
+  max-height: 85vh;
+  overflow-y: auto;
+  background-color: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 1.5rem 1.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  animation: lp-slide-in 0.22s cubic-bezier(0.21,1.02,0.73,1);
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a2a transparent;
+}
+
+/* Header */
+.lp-folder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.lp-folder-title {
+  color: #e0e0e0;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.4;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.lp-folder-title span {
+  color: #e7a41e;
+}
+
+.lp-folder-close {
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.lp-folder-close:hover {
+  color: #e0e0e0;
+  background: #252525;
+}
+
+/* Section labels */
+.lp-folder-section-label {
+  color: #888;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 0.35rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Topic tag pills */
+.lp-topic-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.lp-topic-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  background: #1e1e1e;
+  border: 1px solid #2e2e2e;
+  border-radius: 20px;
+  color: #bbb;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  user-select: none;
+}
+
+.lp-topic-tag:hover {
+  border-color: #e7a41e55;
+  color: #e7a41e;
+  background: #e7a41e0d;
+}
+
+.lp-topic-tag.selected {
+  border-color: #e7a41e;
+  color: #e7a41e;
+  background: #e7a41e15;
+}
+
+/* Folder name input */
+.lp-folder-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+#lp-folder-input {
+  width: 100%;
+  background-color: #1e1e1e;
+  border: 1px solid #2e2e2e;
+  border-radius: 7px;
+  padding: 0.5rem 0.65rem;
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+
+#lp-folder-input::placeholder {
+  color: #444;
+}
+
+#lp-folder-input:focus {
+  border-color: #e7a41e;
+}
+
+/* Existing folders list */
+.lp-existing-folders {
+  max-height: 160px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a2a transparent;
+}
+
+.lp-folder-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  color: #bbb;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  user-select: none;
+}
+
+.lp-folder-item:hover {
+  background: #1e1e1e;
+  color: #e0e0e0;
+}
+
+.lp-folder-item.selected {
+  background: #e7a41e15;
+  color: #e7a41e;
+}
+
+.lp-folder-item-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.lp-folder-item-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-folders-loading {
+  color: #555;
+  font-size: 12px;
+  text-align: center;
+  padding: 0.8rem 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.lp-folders-empty {
+  color: #444;
+  font-size: 12px;
+  text-align: center;
+  padding: 0.6rem 0;
+  font-style: italic;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Action buttons row */
+.lp-folder-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.lp-folder-cancel-btn {
+  flex: 1;
+  border: 1px solid #2e2e2e;
+  cursor: pointer;
+  background: #1e1e1e;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 0.5rem 1rem;
+  height: 36px;
+  color: #999;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.lp-folder-cancel-btn:hover {
+  background: #252525;
+  color: #ccc;
+  border-color: #3e3e3e;
+}
+
+.lp-folder-confirm-btn {
+  flex: 2;
+  border: none;
+  cursor: pointer;
+  background-color: #e7a41e;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 0.5rem 1.25rem;
+  height: 36px;
+  color: #0a0a0a;
+  transition: background-color 0.15s, opacity 0.15s;
+  font-family: inherit;
+  letter-spacing: 0.01em;
+}
+
+.lp-folder-confirm-btn:hover {
+  background-color: #f0b030;
+}
+
+.lp-folder-confirm-btn:active {
+  opacity: 0.85;
+}
+
+.lp-folder-confirm-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Divider */
+.lp-folder-divider {
+  border: none;
+  border-top: 1px solid #2a2a2a;
+  margin: 0;
+}
