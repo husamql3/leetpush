@@ -38,6 +38,12 @@ GitHub repositories.
 - Enter your GitHub username, repository name, and the access token.
 - Click on `Push` to push the solution to your GitHub repository.
 
+### Safari (macOS):
+
+LeetPush can also be built and run as a Safari Web Extension using the Xcode
+project in this repo. See [**Safari setup guide**](docs/SAFARI.md) for the
+full step-by-step instructions.
+
 ### Explanation Video
 
 [![Watch the Explanation Video](http://img.youtube.com/vi/7psCr_Pu7GA/0.jpg)](https://www.youtube.com/watch?v=7psCr_Pu7GA)

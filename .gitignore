@@ -1,2 +1,13 @@
+# Build output
 dist/
 *.zip
+*.tsbuildinfo
+
+# macOS
+.DS_Store
+# Xcode user state & build artifacts (do not commit)
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+node_modules/
